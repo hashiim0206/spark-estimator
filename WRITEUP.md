@@ -32,10 +32,9 @@ Progressive Web Apps running on iOS/macOS Safari run inside sandboxed containers
 
 ### Dynamic Deal Analyzer & SVG Data Visualization
 Integrated a sliding deal evaluation panel calculating financial metrics directly from the current estimate walkthrough:
-- **70% Rule Formula**: Evaluates purchase price and repairs against the industry standard formula:
-  $$\text{Purchase Price} + \text{Est. Repairs} \le 0.70 \times \text{ARV}$$
+- **Comprehensive Investment Analysis**: Evaluates ARV, Purchase Price, Closing Costs, Holding costs, Financing costs, and Contingency to calculate Net Profit, ROI, and Margin on-site.
 - **SVG Vector Allocation Chart**: Renders a dynamic donut chart reflecting capital allocation (Purchase vs. Repairs vs. Soft Costs) using SVG dash-array math calculated in real-time.
-- **Hybrid Datalist Selectors**: Inputs for Beds, Baths, Sqft, and Year Built use hybrid `datalist` fields. This provides field agents with fast dropdown selectors while maintaining the ability to enter custom decimals or values manually.
+- **Native Numeric Keypad Triggers**: Input fields for Beds, Baths, Sqft, and Year Built are optimized with native numeric inputs (`type="number"` and `inputmode`) to instantly trigger the mobile calculator number pad, eliminating buggy datalist spinners.
 
 ---
 
