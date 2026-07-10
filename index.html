@@ -374,8 +374,8 @@ input,textarea,select{font:inherit}
 .undo-redo button.can:active{color:var(--spark)}
 
 /* ===================== ONBOARDING ===================== */
-.onboard-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn 0.4s ease}
-.onboard-card{background:var(--surface);border-radius:var(--radius-xl);padding:32px 24px;max-width:360px;width:100%;text-align:center;animation:slideUp 0.4s ease}
+.onboard-overlay{position:fixed;inset:0;z-index:200;background:rgba(17,24,39,0.5);backdrop-filter:blur(3.5px);-webkit-backdrop-filter:blur(3.5px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn 0.4s ease;pointer-events:none}
+.onboard-card{background:var(--surface);border-radius:var(--radius-xl);padding:32px 24px;max-width:360px;width:100%;text-align:center;animation:slideUp 0.4s ease;box-shadow:var(--shadow-xl);pointer-events:auto}
 .onboard-emoji{font-size:56px;margin-bottom:12px}
 .onboard-title{font-size:20px;font-weight:800;margin-bottom:8px;color:var(--text)}
 .onboard-desc{font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:24px}
@@ -384,7 +384,11 @@ input,textarea,select{font:inherit}
 .onboard-dot.active{background:var(--spark);width:24px;border-radius:4px}
 .onboard-next{width:100%;padding:14px;border-radius:var(--radius-lg);background:var(--spark);color:#fff;font-weight:700;font-size:15px;transition:background var(--trans)}
 .onboard-next:active{background:var(--spark-dark)}
-.onboard-skip{margin-top:12px;font-size:12px;color:var(--text-muted);font-weight:500}
+.onboard-skip{margin-top:12px;font-size:12px;color:var(--text-muted);font-weight:500;cursor:pointer;border:none;background:transparent}
+
+.tour-highlight{position:relative !important;z-index:210 !important;outline:3.5px solid var(--spark) !important;outline-offset:3px !important;box-shadow:0 0 25px rgba(232,98,28,0.5) !important;background:var(--surface) !important;border-radius:var(--radius-md) !important}
+.section-tabs.tour-highlight{border-radius:0 !important;outline-offset:0 !important}
+.room-tabs.tour-highlight{border-radius:0 !important;outline-offset:0 !important}
 
 /* ===================== CALCULATOR ===================== */
 .calc-overlay{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;justify-content:center;padding:0}
@@ -981,16 +985,122 @@ const ONBOARD_STEPS=[
   {emoji:'✅',title:'Estimating Repair Items',desc:'Tap any item checkmark to select it, then enter the quantity. The running total and breakdown bar at the top update live.'},
   {emoji:'📸',title:'Media Logging & Notes',desc:'For checked items, attach site photos and record voice memos. Add specific notes to document repair needs in the field.'},
   {emoji:'🛁',title:'Multi-Room Management',desc:'For Bathrooms and Kitchens, tap "+ Add" to create separate rooms (e.g., Master Bath, Guest Bath) and track budgets independently.'},
-  {emoji:'💰',title:'Custom Price Overrides',desc:'Customize unit costs directly on any line item, or upload a CSV file to override default prices with your company\'s rates.'},
-  {emoji:'🛠',title:'Walkthrough Tools',desc:'Open the Control Center (☰) to access Walkthrough Search, Rehab Presets templates, and the Quick Calculator modal.'},
-  {emoji:'📊',title:'Deal Analyzer & 70% Rule',desc:'Tap "Analyze Deal" to enter ARV and purchase price. Check profitability metrics and view the breakdown in the Pie Chart.'},
+  {emoji:'💰',title:'Custom Price Overrides',desc:'Customize unit costs directly on any line item to override default prices with your local market rates.'},
+  {emoji:'🛠',title:'Walkthrough Tools',desc:'Open the settings menu (☰) to search items instantly, apply Renovation Presets templates, or open the Quick Calculator.'},
+  {emoji:'📊',title:'Deal Analyzer & 70% Rule',desc:'Tap "Analyze Deal" to enter ARV and purchase price. Check profitability metrics and view the breakdown in the SVG Chart.'},
   {emoji:'📤',title:'Branding, PDF & Excel Exports',desc:'Enter your Company and Estimator details in the menu to brand estimates. Export detailed Excel sheets, print PDFs, or draft emails in one tap.'}
 ];
 let onboardStep=0;
 function showOnboarding(){if(localStorage.getItem('sparkOnboardDone'))return;onboardStep=0;renderOnboardStep()}
-function renderOnboardStep(){const s=ONBOARD_STEPS[onboardStep];const last=onboardStep===ONBOARD_STEPS.length-1;document.getElementById('onboard-overlay').innerHTML=`<div class="onboard-overlay"><div class="onboard-card"><div class="onboard-emoji">${s.emoji}</div><div class="onboard-title">${s.title}</div><div class="onboard-desc">${s.desc}</div><div class="onboard-dots">${ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot ${i===onboardStep?'active':''}"></div>`).join('')}</div><button class="onboard-next" id="onboard-next">${last?'Get Started →':'Next'}</button><button class="onboard-skip" id="onboard-skip">${last?'':'Skip tour'}</button></div></div>`;
-document.getElementById('onboard-next').addEventListener('click',()=>{if(last){localStorage.setItem('sparkOnboardDone','1');document.getElementById('onboard-overlay').innerHTML=''}else{onboardStep++;renderOnboardStep()}});
-const skip=document.getElementById('onboard-skip');if(skip)skip.addEventListener('click',()=>{localStorage.setItem('sparkOnboardDone','1');document.getElementById('onboard-overlay').innerHTML=''})}
+function endOnboarding(){
+  localStorage.setItem('sparkOnboardDone','1');
+  document.getElementById('onboard-overlay').innerHTML='';
+  document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
+  closePanel();
+  closeDealAnalyzer();
+  S.showSummary=false;
+  S.currentCat=0;
+  const firstCat=CATEGORIES[0];
+  if(firstCat&&firstCat.items.length){
+    const firstId=firstCat.items[0].id;
+    if(S.items[firstId]&&S.items[firstId].qty==='100'&&!S.items[firstId].notes){
+      S.items[firstId].checked=false;
+      S.items[firstId].qty='';
+    }
+  }
+  saveCurrentState();
+  render();
+}
+function renderOnboardStep(){
+  const s=ONBOARD_STEPS[onboardStep];
+  const last=onboardStep===ONBOARD_STEPS.length-1;
+  
+  // Clean old highlights
+  document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
+  closePanel();
+  closeDealAnalyzer();
+  
+  // Execute dynamic state updates depending on step
+  if(onboardStep===0){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+  }else if(onboardStep===1){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+    document.querySelector('.section-tabs')?.classList.add('tour-highlight');
+  }else if(onboardStep===2){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+    const card=document.querySelector('.item-card');
+    if(card){
+      card.classList.add('tour-highlight');
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }else if(onboardStep===3){
+    S.showSummary=false;
+    S.currentCat=0;
+    const firstCat=CATEGORIES[0];
+    if(firstCat&&firstCat.items.length){
+      const firstId=firstCat.items[0].id;
+      if(!S.items[firstId])S.items[firstId]={checked:false,qty:'',year:'',notes:''};
+      S.items[firstId].checked=true;
+      S.items[firstId].qty='100';
+    }
+    render();
+    const card=document.querySelector('.item-card');
+    if(card){
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      card.querySelector('.media-section')?.classList.add('tour-highlight');
+    }
+  }else if(onboardStep===4){
+    S.showSummary=false;
+    S.currentCat=2; // Bathrooms
+    render();
+    document.querySelector('.room-tabs')?.classList.add('tour-highlight');
+  }else if(onboardStep===5){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+    const costBadge=document.querySelector('.item-cost-label');
+    costBadge?.classList.add('tour-highlight');
+  }else if(onboardStep===6){
+    S.showSummary=false;
+    render();
+    openPanel();
+    setTimeout(()=>{
+      document.getElementById('side-panel')?.classList.add('tour-highlight');
+    },50);
+  }else if(onboardStep===7){
+    S.showSummary=false;
+    render();
+    openDealAnalyzer();
+    setTimeout(()=>{
+      document.querySelector('.sheet-box')?.classList.add('tour-highlight');
+    },50);
+  }else if(onboardStep===8){
+    S.showSummary=true;
+    render();
+    setTimeout(()=>{
+      document.querySelector('.app-header')?.classList.add('tour-highlight');
+    },50);
+  }
+
+  document.getElementById('onboard-overlay').innerHTML=`<div class="onboard-overlay"><div class="onboard-card"><div class="onboard-emoji">${s.emoji}</div><div class="onboard-title">${s.title}</div><div class="onboard-desc">${s.desc}</div><div class="onboard-dots">${ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot ${i===onboardStep?'active':''}"></div>`).join('')}</div><button class="onboard-next" id="onboard-next">${last?'Get Started →':'Next'}</button><button class="onboard-skip" id="onboard-skip">${last?'':'Skip tour'}</button></div></div>`;
+  
+  document.getElementById('onboard-next').addEventListener('click',()=>{
+    if(last){
+      endOnboarding();
+    }else{
+      onboardStep++;
+      renderOnboardStep();
+    }
+  });
+  const skip=document.getElementById('onboard-skip');
+  if(skip)skip.addEventListener('click',endOnboarding);
+}
 
 // ============================================================
 // QUICK CALCULATOR
@@ -1043,7 +1153,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v8';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v9';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
