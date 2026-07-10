@@ -238,9 +238,11 @@ input,textarea,select{font:inherit}
 .panel-new-btn{width:100%;padding:14px;border-radius:var(--radius-lg);background:var(--spark);color:#fff;font-weight:700;font-size:14px;transition:background var(--trans)}
 .panel-new-btn:active{background:var(--spark-dark)}
 .panel-section{padding:16px;border-bottom:1px solid var(--border-light)}
-.panel-section-title{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.8px;margin-bottom:12px}
+.panel-section-title{display:flex;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.8px;margin-bottom:12px}
+.panel-icon{display:inline-flex;align-items:center;justify-content:center;margin-right:6px;color:var(--text-muted)}
 .panel-action-row{display:flex;flex-direction:column;gap:8px}
 .panel-tool-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:var(--border-light);color:var(--text);border:none;border-radius:var(--radius-md);font-size:13px;font-weight:600;transition:all var(--trans);text-align:left;cursor:pointer}
+.panel-tool-btn svg{margin-right:2px;flex-shrink:0;color:var(--text-sec)}
 .panel-tool-btn:active{background:var(--border);transform:scale(0.98)}
 .panel-input-group{margin-bottom:10px}
 .panel-input-group:last-child{margin-bottom:0}
@@ -422,7 +424,7 @@ input,textarea,select{font:inherit}
   <div class="panel-list">
     <!-- 1. Branding Personalization -->
     <div class="panel-section">
-      <div class="panel-section-title">👤 Branding & Info</div>
+      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Branding & Info</div>
       <div class="panel-input-group">
         <label class="panel-input-label">Company Name</label>
         <input type="text" id="brand-company" class="panel-input" placeholder="Enter Company Name" />
@@ -435,47 +437,51 @@ input,textarea,select{font:inherit}
 
     <!-- 2. Saved Projects -->
     <div class="panel-section">
-      <div class="panel-section-title">📁 Saved Projects</div>
+      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Saved Projects</div>
       <div id="panel-list" class="panel-list-inner"></div>
     </div>
 
     <!-- 3. Walkthrough Tools -->
     <div class="panel-section">
-      <div class="panel-section-title">🛠️ Walkthrough Tools</div>
+      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>Walkthrough Tools</div>
       <div class="panel-action-row">
         <button class="panel-tool-btn" data-action="open-search">
-          <span>🔍</span> Search
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
         </button>
         <button class="panel-tool-btn" data-action="open-calc">
-          <span>🧮</span> Quick Calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="22" x2="16" y2="16"/><rect x="8" y="10" width="2" height="2"/><rect x="14" y="10" width="2" height="2"/><rect x="8" y="14" width="2" height="2"/><rect x="14" y="14" width="2" height="2"/><rect x="8" y="18" width="2" height="2"/><rect x="14" y="18" width="2" height="2"/></svg>Quick Calculator
         </button>
         <button class="panel-tool-btn" data-action="open-presets">
-          <span>⚡</span> Rehab Presets
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Rehab Presets
         </button>
       </div>
     </div>
 
     <!-- 4. Share & Export -->
     <div class="panel-section">
-      <div class="panel-section-title">📤 Share & Export</div>
+      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>Share & Export</div>
       <div class="panel-action-row">
         <button class="panel-tool-btn" data-action="export" style="background:rgba(232,98,28,0.08);color:var(--spark)">
-          <span>📊</span> Export Excel & Photos
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Export Excel & Photos
         </button>
         <button class="panel-tool-btn" data-action="print-pdf">
-          <span>📄</span> Generate PDF Report
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Generate PDF Report
         </button>
       </div>
     </div>
 
     <!-- 5. App Settings -->
     <div class="panel-section" style="border-bottom:none">
-      <div class="panel-section-title">⚙️ App Settings</div>
+      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>App Settings</div>
       <div class="panel-input-group">
         <label class="panel-input-label">App Theme</label>
         <div style="display:flex;gap:8px">
-          <button id="theme-light-btn" class="panel-tool-btn" style="flex:1;justify-content:center">☀️ Light</button>
-          <button id="theme-dark-btn" class="panel-tool-btn" style="flex:1;justify-content:center">🌙 Dark</button>
+          <button id="theme-light-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
+          </button>
+          <button id="theme-dark-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
+          </button>
         </div>
       </div>
       <div class="panel-input-group" style="margin-top:14px">
@@ -488,8 +494,12 @@ input,textarea,select{font:inherit}
         <button id="reset-prices-btn" class="hidden" style="width:100%;padding:10px;border-radius:var(--radius-sm);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);font-weight:700;font-size:12px;background:transparent">Reset to Defaults</button>
       </div>
       <div class="panel-input-group" style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:12px">
-        <button id="relaunch-tour-btn" class="panel-tool-btn" style="justify-content:center;margin-bottom:8px">🔄 Relaunch Welcome Tour</button>
-        <button id="clear-all-btn" class="panel-tool-btn" style="color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">🗑️ Clear Current Walkthrough</button>
+        <button id="relaunch-tour-btn" class="panel-tool-btn" style="justify-content:center;margin-bottom:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 12a11 11 0 1 1-11-11c3.1 0 5.9 1.3 7.8 3.4L23 7"/><polyline points="17 1 17 7 23 7"/></svg>Relaunch Welcome Tour
+        </button>
+        <button id="clear-all-btn" class="panel-tool-btn" style="color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Clear Current Walkthrough
+        </button>
       </div>
     </div>
   </div>
@@ -674,7 +684,7 @@ let _st;function scheduleSave(){clearTimeout(_st);_st=setTimeout(saveCurrentStat
 // ============================================================
 const DEFAULT_ROOMS={kitchen:{instances:[{id:'k1',name:'Kitchen'}],current:0},bathroom:{instances:[{id:'b1',name:'Bathroom 1'},{id:'b2',name:'Bathroom 2'}],current:0}};
 const DEFAULT_PROP={beds:'',baths:'',sqft:'',yearBuilt:'',type:'single'};
-const DEFAULT_DEAL={arv:'',purchasePrice:'',closingPct:3,holdingMonths:4,monthlyHolding:1500,financingRate:8,contingencyPct:10};
+const DEFAULT_DEAL={arv:'',purchasePrice:'',closingPct:0,holdingMonths:0,monthlyHolding:'',financingRate:0,contingencyPct:0};
 
 const S={currentCat:0,showSummary:false,currentProjectId:null,currentProjectName:'New Estimate',items:{},photos:{},voiceMemos:{},expandedGroups:[],rooms:JSON.parse(JSON.stringify(DEFAULT_ROOMS)),property:{...DEFAULT_PROP},projectPriceOverrides:{},globalPriceOverrides:{},dealAnalyzer:{...DEFAULT_DEAL},propOpen:true,prevTotal:0,companyName:localStorage.getItem('sparkCompany')||'',estimatorName:localStorage.getItem('sparkEstimator')||''};
 
@@ -827,7 +837,7 @@ function renderDealOutput(){const r=calcDeal();const C=157.08;const si=r.totalIn
 return`${r.arv>0||r.purchase>0?`<div class="deal-chart-container"><svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)"><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--border-light)" stroke-width="50"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--blue)" stroke-width="50" stroke-dasharray="${pS} ${C}" stroke-dashoffset="0"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--spark)" stroke-width="50" stroke-dasharray="${rS} ${C}" stroke-dashoffset="${-pS}"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--purple)" stroke-width="50" stroke-dasharray="${sS} ${C}" stroke-dashoffset="${-(pS+rS)}"/><circle cx="60" cy="60" r="18" fill="var(--surface)"/><text x="60" y="58" class="deal-chart-text" transform="rotate(90 60 60)">TOTAL BUY-IN</text><text x="60" y="72" transform="rotate(90 60 60)" style="font-size:10px;font-weight:800;fill:var(--text);text-anchor:middle">${fmt(r.totalInvestment)}</text></svg></div><div style="display:flex;justify-content:center;gap:12px;font-size:10px;font-weight:700;margin-bottom:18px"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--blue);border-radius:2px"></span>Purchase</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--spark);border-radius:2px"></span>Repairs</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px"></span>Soft Costs</span></div>`:''}<div class="deal-input-group"><label class="deal-label">Repair Estimate (from walkthrough)</label><div style="padding:10px 12px;background:var(--border-light);border-radius:var(--radius-md);font-size:16px;font-weight:700;color:var(--spark)">${fmt(r.repairs)}</div></div>${r.arv>0||r.purchase>0?`<div class="deal-results"><div class="deal-result-row"><span class="deal-result-label">Closing Costs</span><span class="deal-result-value">${fmt(r.closingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Holding Costs</span><span class="deal-result-value">${fmt(r.holdingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Financing</span><span class="deal-result-value">${fmt(r.financing)}</span></div><div class="deal-result-row"><span class="deal-result-label">Contingency</span><span class="deal-result-value">${fmt(r.contingency)}</span></div><div class="deal-result-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><span class="deal-result-label" style="font-weight:700">Total Investment</span><span class="deal-result-value" style="font-size:16px">${fmt(r.totalInvestment)}</span></div><div class="deal-result-row"><span class="deal-result-label" style="font-weight:700">Projected Profit</span><span class="deal-result-value" style="font-size:16px;color:${r.profit>=0?'var(--green)':'var(--red)'}">${fmt(r.profit)}</span></div><div class="deal-result-row"><span class="deal-result-label">ROI</span><span class="deal-result-value">${r.roi.toFixed(1)}%</span></div><div class="deal-result-row"><span class="deal-result-label">Profit Margin</span><span class="deal-result-value">${r.margin.toFixed(1)}%</span></div></div><div class="deal-verdict ${r.verdictClass}">${r.verdictText}</div><div class="deal-rule-check ${r.rule70Pass?'pass':'fail'}">${r.rule70Pass?'✅':'❌'} 70% Rule: Purchase + Repairs = ${fmt(r.rule70)} ${r.rule70Pass?'≤':'>'} ${fmt(r.rule70Limit)} (70% of ARV)</div>`:'<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">Enter ARV and Purchase Price to see analysis</div>'}`}
 function updateDealOutput(){const el=document.getElementById('deal-output');if(el)el.innerHTML=renderDealOutput()}
 function renderDealBody(){const d=S.dealAnalyzer;
-document.getElementById('deal-body').innerHTML=`<div id="deal-output">${renderDealOutput()}</div><div class="deal-input-group"><label class="deal-label">After Repair Value (ARV)</label><input class="deal-input" type="text" inputmode="numeric" data-deal="arv" value="${d.arv}" placeholder="e.g. 250000"/></div><div class="deal-input-group"><label class="deal-label">Purchase Price</label><input class="deal-input" type="text" inputmode="numeric" data-deal="purchasePrice" value="${d.purchasePrice}" placeholder="e.g. 150000"/></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Closing</label><input class="deal-slider" type="range" min="0" max="10" step="0.5" data-deal-slider="closingPct" data-deal-fmt="%" value="${d.closingPct}"/><span class="deal-slider-val" id="dsv-closingPct">${d.closingPct}%</span></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Holding</label><input class="deal-slider" type="range" min="1" max="18" step="1" data-deal-slider="holdingMonths" data-deal-fmt=" mo" value="${d.holdingMonths}"/><span class="deal-slider-val" id="dsv-holdingMonths">${d.holdingMonths} mo</span></div><div class="deal-input-group"><label class="deal-label">Monthly Holding Cost</label><input class="deal-input" type="text" inputmode="numeric" data-deal="monthlyHolding" value="${d.monthlyHolding}" placeholder="1500"/></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Financing</label><input class="deal-slider" type="range" min="0" max="15" step="0.5" data-deal-slider="financingRate" data-deal-fmt="%" value="${d.financingRate}"/><span class="deal-slider-val" id="dsv-financingRate">${d.financingRate}%</span></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Contingency</label><input class="deal-slider" type="range" min="0" max="25" step="1" data-deal-slider="contingencyPct" data-deal-fmt="%" value="${d.contingencyPct}"/><span class="deal-slider-val" id="dsv-contingencyPct">${d.contingencyPct}%</span></div>`}
+document.getElementById('deal-body').innerHTML=`<div id="deal-output">${renderDealOutput()}</div><div class="deal-input-group"><label class="deal-label">After Repair Value (ARV)</label><input class="deal-input" type="text" inputmode="numeric" data-deal="arv" value="${d.arv}" placeholder="Enter After Repair Value (ARV)"/></div><div class="deal-input-group"><label class="deal-label">Purchase Price</label><input class="deal-input" type="text" inputmode="numeric" data-deal="purchasePrice" value="${d.purchasePrice}" placeholder="Enter Purchase Price"/></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Closing</label><input class="deal-slider" type="range" min="0" max="10" step="0.5" data-deal-slider="closingPct" data-deal-fmt="%" value="${d.closingPct}"/><span class="deal-slider-val" id="dsv-closingPct">${d.closingPct}%</span></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Holding</label><input class="deal-slider" type="range" min="0" max="18" step="1" data-deal-slider="holdingMonths" data-deal-fmt=" mo" value="${d.holdingMonths}"/><span class="deal-slider-val" id="dsv-holdingMonths">${d.holdingMonths} mo</span></div><div class="deal-input-group"><label class="deal-label">Monthly Holding Cost</label><input class="deal-input" type="text" inputmode="numeric" data-deal="monthlyHolding" value="${d.monthlyHolding}" placeholder="Enter Monthly Holding Cost"/></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Financing</label><input class="deal-slider" type="range" min="0" max="15" step="0.5" data-deal-slider="financingRate" data-deal-fmt="%" value="${d.financingRate}"/><span class="deal-slider-val" id="dsv-financingRate">${d.financingRate}%</span></div><div class="deal-slider-row"><label class="deal-label" style="margin:0;min-width:90px">Contingency</label><input class="deal-slider" type="range" min="0" max="25" step="1" data-deal-slider="contingencyPct" data-deal-fmt="%" value="${d.contingencyPct}"/><span class="deal-slider-val" id="dsv-contingencyPct">${d.contingencyPct}%</span></div>`}
 
 // ============================================================
 // REHAB PRESETS
@@ -1025,7 +1035,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v3';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v4';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
