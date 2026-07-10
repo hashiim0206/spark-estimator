@@ -146,7 +146,7 @@ input,textarea,select{font:inherit}
 @keyframes highlightFlash{0%{background-color:rgba(232,98,28,0.2)}100%{background-color:transparent}}
 .item-inner{padding:14px}
 .item-top{display:flex;gap:12px;align-items:flex-start}
-.item-toggle{flex-shrink:0;width:28px;height:28px;margin-top:1px;border-radius:50%;border:2.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all var(--trans);background:var(--surface)}
+.item-toggle{flex-shrink:0;width:28px;height:28px;margin-top:1px;border-radius:50%;border:2px solid var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all var(--trans);background:var(--surface)}
 .item-toggle.on{background:var(--spark);border-color:var(--spark);box-shadow:0 2px 8px var(--spark-glow)}
 .item-toggle svg{opacity:0;transition:opacity 0.15s}
 .item-toggle.on svg{opacity:1}
@@ -154,12 +154,12 @@ input,textarea,select{font:inherit}
 .item-title-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
 .item-name{font-size:13px;font-weight:600;line-height:1.3;transition:color var(--trans)}
 .item-name.active{color:var(--text)}
-.item-name.inactive{color:var(--text-muted)}
+.item-name.inactive{color:var(--text)}
 .item-line-total{font-size:15px;font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums;transition:color var(--trans)}
-.item-cost-label{font-size:11px;color:var(--text-muted);margin-top:2px}
+.item-cost-label{font-size:11px;color:var(--text-sec);margin-top:2px}
 .nan-card{padding:12px 14px}
 .nan-inner{display:flex;align-items:center;gap:12px}
-.nan-label{font-size:13px;font-style:italic;color:var(--text-muted);transition:color var(--trans)}
+.nan-label{font-size:13px;font-style:italic;color:var(--text-sec);transition:color var(--trans)}
 .nan-label.on{color:var(--spark);font-weight:600}
 
 /* Expanded inputs */
@@ -1153,7 +1153,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v10';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v11';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
