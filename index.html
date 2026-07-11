@@ -163,10 +163,13 @@ input,textarea,select{font:inherit}
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  border-bottom: 1px dotted rgba(156,163,175,0.6);
+  padding-bottom: 1px;
+  transition: all 0.15s ease;
 }
 .item-cost-label.clickable:hover {
   color: var(--spark);
-  text-decoration: underline;
+  border-bottom-color: var(--spark);
 }
 
 .nan-card{padding:12px 14px}
@@ -610,12 +613,12 @@ input,textarea,select{font:inherit}
     <h3 class="modal-title">Add Custom Item</h3>
     <div style="margin-bottom:12px;text-align:left">
       <label class="panel-input-label" style="margin-bottom:4px;display:block">Item Name</label>
-      <input id="custom-item-name" class="modal-input" type="text" placeholder="e.g. Closet Wire Shelving" style="width:100%;box-sizing:border-box" />
+      <input id="custom-item-name" class="modal-input" type="text" placeholder="Enter custom item name" style="width:100%;box-sizing:border-box" />
     </div>
     <div style="margin-bottom:12px;text-align:left;display:flex;gap:12px">
       <div style="flex:1">
         <label class="panel-input-label" style="margin-bottom:4px;display:block">Unit Cost ($)</label>
-        <input id="custom-item-cost" class="modal-input" type="number" placeholder="25.00" step="any" min="0" style="width:100%;box-sizing:border-box" />
+        <input id="custom-item-cost" class="modal-input" type="number" placeholder="0.00" step="any" min="0" style="width:100%;box-sizing:border-box" />
       </div>
       <div style="flex:1">
         <label class="panel-input-label" style="margin-bottom:4px;display:block">Unit Type</label>
@@ -645,7 +648,7 @@ input,textarea,select{font:inherit}
     <p style="font-size:12px;color:var(--text-sec);margin-bottom:14px" id="pom-info">Default: $0.00 / unit</p>
     <div style="margin-bottom:14px;text-align:left">
       <label class="panel-input-label" style="margin-bottom:4px;display:block">Custom Unit Cost ($)</label>
-      <input id="pom-cost-input" class="modal-input" type="number" step="any" min="0" placeholder="0.00" style="width:100%;box-sizing:border-box" />
+      <input id="pom-cost-input" class="modal-input" type="number" step="any" min="0" placeholder="Enter custom cost" style="width:100%;box-sizing:border-box" />
     </div>
     <div style="margin-bottom:16px;text-align:left">
       <label class="panel-input-label" style="margin-bottom:6px;display:block">Override Scope</label>
@@ -1072,10 +1075,10 @@ function buildSlots(items,roomId){
   return slots;
 }
 
-function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roomId?`${roomId}:${gid}`:gid;const isOpen=S.expandedGroups.includes(ek);const cc=entries.filter(e=>S.items[e.stateId]?.checked).length;const gt=entries.reduce((s,e)=>s+calcItem(e.item,S.items[e.stateId]),0);return`<div class="group-card ${cc>0?'has-items':''}" data-group-card data-gid="${ek}" style="animation-delay:${idx*0.04}s"><button class="group-header" data-action="toggle-group" data-gid="${ek}"><div class="group-left"><span class="group-chevron ${isOpen?'open':''}">${I.chev}</span><span class="group-label">${label}</span>${cc>0?`<span class="group-badge">${cc} ✓</span>`:''}</div><span class="group-total ${gt>0?'has-value':'no-value'}" data-group-total>${gt>0?fmt(gt):'\u2014'}</span></button>${isOpen?`<div class="group-body">${entries.map(e=>renderLineItem(e.item,e.stateId,true)).join('')}<div class="group-add-item-row"><button class="group-add-item-btn" data-action="add-custom-item" data-gid="${gid}" data-rid="${roomId||''}">${I.cam}<span>+ Add Line Item</span></button></div></div>`:''}</div>`}
+function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roomId?`${roomId}:${gid}`:gid;const isOpen=S.expandedGroups.includes(ek);const cc=entries.filter(e=>S.items[e.stateId]?.checked).length;const gt=entries.reduce((s,e)=>s+calcItem(e.item,S.items[e.stateId]),0);return`<div class="group-card ${cc>0?'has-items':''}" data-group-card data-gid="${ek}" style="animation-delay:${idx*0.04}s"><button class="group-header" data-action="toggle-group" data-gid="${ek}"><div class="group-left"><span class="group-chevron ${isOpen?'open':''}">${I.chev}</span><span class="group-label">${label}</span>${cc>0?`<span class="group-badge">${cc} ✓</span>`:''}</div><span class="group-total ${gt>0?'has-value':'no-value'}" data-group-total>${gt>0?fmt(gt):'\u2014'}</span></button>${isOpen?`<div class="group-body">${entries.map(e=>renderLineItem(e.item,e.stateId,true)).join('')}<div class="group-add-item-row"><button class="group-add-item-btn" data-action="add-custom-item" data-gid="${gid}" data-rid="${roomId||''}">+ Add Custom Line Item</button></div></div>`:''}</div>`}
 
 function renderLineItem(item,sid,grouped){const s=S.items[sid]||{checked:false,qty:'',year:'',notes:''};const cls=grouped?`item-card item-card-grouped ${s.checked?'checked':''}`:`item-card item-card-standalone ${s.checked?'checked':''}`;if(item.noAction)return`<div class="${cls}"><div class="nan-card"><div class="nan-inner" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><span class="nan-label ${s.checked?'on':''}">No action needed</span></div></div></div>`;
-const total=calcItem(item,s);const cost=getItemCost(item);const costStr='$'+cost.toLocaleString('en-US',{minimumFractionDigits:2})+' / '+item.unit;const over=isOverridden(item);const meta=item.min?`min $${item.min.toLocaleString()}`:'';const photos=S.photos[sid]||[];const memos=S.voiceMemos[sid]||[];const recording=isRecording(sid);
+const total=calcItem(item,s);const cost=getItemCost(item);const costStr='$'+cost.toLocaleString('en-US',{minimumFractionDigits:2})+' / '+item.unit + `<span class="edit-price-pen" style="opacity:0.45;margin-left:4px;display:inline-flex;align-items:center;vertical-align:middle;position:relative;top:-1px">${I.pen}</span>`;const over=isOverridden(item);const meta=item.min?`min $${item.min.toLocaleString()}`:'';const photos=S.photos[sid]||[];const memos=S.voiceMemos[sid]||[];const recording=isRecording(sid);
 return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="voice-memo"><audio controls src="${m.dataUrl}"></audio><button class="voice-del" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
 
 function renderBottomNav(){const first=S.currentCat===0;const last=S.currentCat===CATEGORIES.length-1;return`<div class="bottom-nav pb-safe"><div class="bottom-nav-inner"><button class="nav-btn nav-btn-secondary" data-action="prev-cat" ${first?'disabled':''}>← Previous</button>${!last?'<button class="nav-btn nav-btn-primary" data-action="next-cat">Next →</button>':'<button class="nav-btn nav-btn-primary" data-action="show-summary">View Summary</button>'}</div></div>`}
@@ -1505,7 +1508,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v16';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v17';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
