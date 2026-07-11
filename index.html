@@ -156,7 +156,19 @@ input,textarea,select{font:inherit}
 .item-name.active{color:var(--text)}
 .item-name.inactive{color:var(--text)}
 .item-line-total{font-size:15px;font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums;transition:color var(--trans)}
+
 .item-cost-label{font-size:11px;color:var(--text-sec);margin-top:2px}
+.item-cost-label.clickable {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.item-cost-label.clickable:hover {
+  color: var(--spark);
+  text-decoration: underline;
+}
+
 .nan-card{padding:12px 14px}
 .nan-inner{display:flex;align-items:center;gap:12px}
 .nan-label{font-size:13px;font-style:italic;color:var(--text-sec);transition:color var(--trans)}
@@ -407,7 +419,53 @@ input,textarea,select{font:inherit}
 .calc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .calc-title{font-size:16px;font-weight:700}
 .calc-close-btn{color:var(--text-muted);font-size:20px;padding:4px}
-  </style>
+  
+.group-add-item-row {
+  display: flex;
+  justify-content: center;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--border-light);
+}
+.group-add-item-btn {
+  width: 100%;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px dashed var(--spark);
+  color: var(--spark);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.group-add-item-btn:hover {
+  background: rgba(232,98,28,0.05);
+}
+.item-delete-btn {
+  opacity: 0.3;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+.item-delete-btn:hover {
+  opacity: 1 !important;
+  background: rgba(239,68,68,0.1);
+  color: var(--red) !important;
+}
+@media (hover: hover) {
+  .item-card:hover .item-delete-btn {
+    opacity: 0.7;
+  }
+}
+@media (hover: none) {
+  .item-delete-btn {
+    opacity: 0.8;
+  }
+}
+</style>
 </head>
 <body>
 <div id="toast-container" class="toast-container"></div>
@@ -496,6 +554,12 @@ input,textarea,select{font:inherit}
           </button>
         </div>
       </div>
+      <div class="panel-input-group" style="margin-top:12px">
+        <label class="panel-input-label">Update Prices globally</label>
+        <button id="upload-csv-btn" class="panel-tool-btn" style="width:100%;justify-content:center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Pricing CSV
+        </button>
+      </div>
       <div class="panel-input-group" style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:12px">
         <button id="clear-all-btn" class="panel-tool-btn" style="color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Clear Estimate Checklist
@@ -538,6 +602,71 @@ input,textarea,select{font:inherit}
   </div>
 </div>
 
+
+<!-- ADD CUSTOM ITEM MODAL -->
+<div id="custom-item-modal" class="modal-overlay">
+  <div id="custom-item-bg" class="modal-bg"></div>
+  <div class="modal-box" style="max-width:360px">
+    <h3 class="modal-title">Add Custom Item</h3>
+    <div style="margin-bottom:12px;text-align:left">
+      <label class="panel-input-label" style="margin-bottom:4px;display:block">Item Name</label>
+      <input id="custom-item-name" class="modal-input" type="text" placeholder="e.g. Closet Wire Shelving" style="width:100%;box-sizing:border-box" />
+    </div>
+    <div style="margin-bottom:12px;text-align:left;display:flex;gap:12px">
+      <div style="flex:1">
+        <label class="panel-input-label" style="margin-bottom:4px;display:block">Unit Cost ($)</label>
+        <input id="custom-item-cost" class="modal-input" type="number" placeholder="25.00" step="any" min="0" style="width:100%;box-sizing:border-box" />
+      </div>
+      <div style="flex:1">
+        <label class="panel-input-label" style="margin-bottom:4px;display:block">Unit Type</label>
+        <select id="custom-item-unit" class="prop-select" style="width:100%;max-width:none;box-sizing:border-box;height:38px;padding:0 8px">
+          <option value="ea.">ea.</option>
+          <option value="sqft">sqft</option>
+          <option value="LF">LF</option>
+          <option value="flat">flat</option>
+          <option value="room">room</option>
+          <option value="house">house</option>
+          <option value="variable">variable</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-buttons">
+      <button id="custom-item-cancel" class="modal-btn modal-btn-cancel">Cancel</button>
+      <button id="custom-item-confirm" class="modal-btn modal-btn-confirm">Add Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICE OVERRIDE MODAL -->
+<div id="price-override-modal" class="modal-overlay">
+  <div id="price-override-bg" class="modal-bg"></div>
+  <div class="modal-box" style="max-width:360px">
+    <h3 class="modal-title" id="pom-title">Customize Price</h3>
+    <p style="font-size:12px;color:var(--text-sec);margin-bottom:14px" id="pom-info">Default: $0.00 / unit</p>
+    <div style="margin-bottom:14px;text-align:left">
+      <label class="panel-input-label" style="margin-bottom:4px;display:block">Custom Unit Cost ($)</label>
+      <input id="pom-cost-input" class="modal-input" type="number" step="any" min="0" placeholder="0.00" style="width:100%;box-sizing:border-box" />
+    </div>
+    <div style="margin-bottom:16px;text-align:left">
+      <label class="panel-input-label" style="margin-bottom:6px;display:block">Override Scope</label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+          <input type="radio" name="pom-scope" value="project" checked style="accent-color:var(--spark)" />
+          This Project Only
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+          <input type="radio" name="pom-scope" value="global" style="accent-color:var(--spark)" />
+          Globally (All Projects)
+        </label>
+      </div>
+    </div>
+    <div class="modal-buttons">
+      <button id="pom-reset" class="modal-btn" style="background:#EF4444;color:white;border:none">Reset</button>
+      <button id="pom-cancel" class="modal-btn modal-btn-cancel">Cancel</button>
+      <button id="pom-confirm" class="modal-btn modal-btn-confirm">Save</button>
+    </div>
+  </div>
+</div>
 <!-- DEAL ANALYZER -->
 <div id="deal-sheet" class="sheet-overlay">
   <div id="deal-bg" class="sheet-bg"></div>
@@ -594,52 +723,8 @@ input,textarea,select{font:inherit}
 // ============================================================
 // DATA — 109 line items, 19 groups, 5 categories
 // ============================================================
-const CATEGORIES=[
-{id:'interior',name:'Interior / General',icon:'interior',multiRoom:true,items:[
-{id:'ig-01',name:'Refinish Hardwood Floor',cost:2.35,unit:'sqft'},{id:'ig-02',name:'New Hardwoods 1.5"',cost:10,unit:'sqft'},{id:'ig-03',name:'New Hardwoods 2"',cost:4.75,unit:'sqft'},{id:'ig-04',name:'Hardwood Splicing',cost:8.4,unit:'sqft'},{id:'ig-05',name:'Vinyl Plank',cost:2.5,unit:'sqft'},{id:'ig-06',name:'Carpet',cost:1.9,unit:'sqft'},{id:'ig-07',name:'Interior Paint \u2014 2 Tone',cost:2.95,unit:'sqft'},{id:'ig-08',name:'Drywall Repair',cost:900,unit:'1,000 sqft'},{id:'ig-09',name:'Wallpaper Removal',cost:250,unit:'room'},{id:'ig-10',name:'Interior Door \u2014 Hollow Slab',cost:125,unit:'ea.'},{id:'ig-11',name:'Interior Door Hardware',cost:25,unit:'ea.'},{id:'ig-12',name:'Bifold Door with Framing',cost:400,unit:'ea.'},{id:'ig-13',name:'Interior Door \u2014 Pre-hung',cost:200,unit:'ea.'},{id:'ig-14',name:'Front Entry Door',cost:475,unit:'ea.',min:500},{id:'ig-15',name:'Front Entry Door Hardware',cost:80,unit:'ea.',min:75,defaultQty:1},{id:'ig-16',name:'Exterior Door Hardware',cost:75,unit:'handle',defaultQty:1},{id:'ig-17',name:'Exterior Insulated Side Door',cost:500,unit:'ea.'},{id:'ig-18',name:'Sliding Glass Door',cost:1025,unit:'ea.'},{id:'ig-19',name:'Trim Out (Casing, Crown, Base)',cost:3.75,unit:'LF',min:500,defaultQty:143},{id:'ig-20',name:'MISC / Punch List',cost:2650,unit:'flat',defaultQty:1},{id:'ig-21',name:'Finish Out Labor',cost:1350,unit:'flat',defaultQty:1},{id:'ig-22',name:'Light Fixtures',cost:70,unit:'100 sqft'},{id:'ig-23',name:'Bedbug Spray / Heat Treat',cost:475,unit:'ea.',min:100},{id:'ig-24',name:'Termite Treatment',cost:650,unit:'ea.'},{id:'ig-25',name:'Demo',cost:1375,unit:'variable',defaultQty:1},{id:'ig-26',name:'Haul Off',cost:725,unit:'load',defaultQty:1},{id:'ig-27',name:'Final Cleaning',cost:325,unit:'flat',min:250,defaultQty:1},{id:'ig-28',name:'Staging',cost:0.9,unit:'sqft'},
-{id:'ig-nan-1',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ig-nan-2',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ig-nan-3',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ig-nan-4',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ig-nan-5',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ig-nan-6',name:'No Action Needed',cost:0,unit:'flat',noAction:true}]},
-{id:'kitchen',name:'Kitchen',icon:'kitchen',multiRoom:true,items:[
-{id:'kt-01',name:'Hinges and Pulls',cost:275,unit:'kitchen'},{id:'kt-02',name:'Cabinets Uppers',cost:125,unit:'LF'},{id:'kt-03',name:'Cabinets Lowers',cost:150,unit:'LF'},{id:'kt-04',name:'Cabinet Door Faces Only',cost:80,unit:'door'},{id:'kt-05',name:'Cabinets (Labor & Paint)',cost:1100,unit:'kitchen'},{id:'kt-06',name:'Granite + 4" Splash Guard',cost:40,unit:'LF',min:1050},{id:'kt-07',name:'Backsplash',cost:725,unit:'house'},{id:'kt-08',name:'Misc Woodwork',cost:500,unit:'variable'},{id:'kt-09',name:'Tile \u2014 Large Areas',cost:6.45,unit:'sqft'},{id:'kt-10',name:'Tile \u2014 Small Areas',cost:10,unit:'sqft'},{id:'kt-11',name:'Undermount Kitchen Sink',cost:325,unit:'ea.'},{id:'kt-12',name:'Microwave / Hood',cost:500,unit:'ea.'},{id:'kt-13',name:'Range',cost:725,unit:'ea.'},{id:'kt-14',name:'Wall Oven',cost:1075,unit:'ea.'},{id:'kt-15',name:'Cooktop',cost:550,unit:'ea.'},{id:'kt-16',name:'Dishwasher',cost:575,unit:'ea.'},{id:'kt-17',name:'Fridge',cost:1175,unit:'ea.'},
-{id:'kt-nan-1',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'kt-nan-2',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'kt-nan-3',name:'No Action Needed',cost:0,unit:'flat',noAction:true}]},
-{id:'bathroom',name:'Bathroom',icon:'bathroom',multiRoom:true,items:[
-{id:'ba-01',name:'Granite ($/LF)',cost:35,unit:'LF'},{id:'ba-02',name:'New Bottom Vanity',cost:125,unit:'LF'},{id:'ba-03',name:'Home Depot Vanity w/ Sink (18")',cost:225,unit:'ea.'},{id:'ba-04',name:'Toilet',cost:150,unit:'ea.'},{id:'ba-05',name:'Tile \u2014 Large Areas',cost:5.8,unit:'sqft'},{id:'ba-06',name:'Tile \u2014 Small Areas',cost:10,unit:'sqft'},{id:'ba-07',name:'Reglaze Tub or Chemical Clean',cost:350,unit:'ea.'},{id:'ba-08',name:'Reglaze Tub + Surround',cost:750,unit:'ea.'},{id:'ba-09',name:'Reglaze Shower',cost:1325,unit:'ea.'},{id:'ba-10',name:'Tiled Shower Tear Out + Tile',cost:3100,unit:'ea.'},{id:'ba-11',name:'Tub Tile Surround + Tub',cost:2250,unit:'ea.'},{id:'ba-12',name:'Shower Insert Tear Out + New',cost:825,unit:'ea.'},{id:'ba-13',name:'Tub Tear Out + New Insert & Tub',cost:1575,unit:'ea.'},{id:'ba-14',name:'Undermount Sink',cost:150,unit:'ea.'},{id:'ba-15',name:'Mirror',cost:200,unit:'ea.'},{id:'ba-16',name:'HVL (needed if no window)',cost:275,unit:'ea.'},
-{id:'ba-nan-1',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ba-nan-2',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ba-nan-3',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ba-nan-4',name:'No Action Needed',cost:0,unit:'flat',noAction:true}]},
-{id:'systems',name:'Systems & Structure',icon:'systems',multiRoom:true,items:[
-{id:'as-01',name:'Furnace',cost:3350,unit:'ea.',hasYear:true},{id:'as-02',name:'Condensing Unit',cost:3300,unit:'ea.',hasYear:true},{id:'as-03',name:'Package Unit',cost:4700,unit:'ea.'},{id:'as-04',name:'A-Coil (if no condensing)',cost:1625,unit:'ea.'},{id:'as-05',name:'Ducting (if NO HVAC)',cost:3200,unit:'ea.'},{id:'as-06',name:'Duct Cleaning \u2014 Floor Vents',cost:550,unit:'ea.'},{id:'as-07',name:'Window Unit Replacement 220',cost:575,unit:'ea.'},{id:'as-08',name:'Hot Water Heater w/ Tank',cost:1425,unit:'ea.',hasYear:true},{id:'as-09',name:'Hot Water Heater Tank Only',cost:200,unit:'ea.'},{id:'as-10',name:'Switches / Outlets',cost:1400,unit:'house'},{id:'as-11',name:'Standard Electrical',cost:1650,unit:'house',defaultQty:1},{id:'as-12',name:'Subfloor',cost:8.2,unit:'sqft'},{id:'as-13',name:'Framing',cost:950,unit:'variable'},{id:'as-14',name:'Structural (Pier)',cost:375,unit:'pier'},{id:'as-15',name:'Structural Foam Injection',cost:5.85,unit:'sqft'},{id:'as-16',name:'Roof',cost:1100,unit:'225 sqft L&M',min:1000},{id:'as-17',name:'Plumbing',cost:1000,unit:'variable',defaultQty:1},{id:'as-18',name:'Electrical Panel Swap 200A',cost:2350,unit:'ea.'},{id:'as-19',name:'Full Rewire (to Studs)',cost:5.65,unit:'sqft'},{id:'as-20',name:'Full Rewire (leaving Drywall)',cost:9.15,unit:'sqft'},{id:'as-21',name:'Wall Insulation (to Studs)',cost:1.2,unit:'sqft'},{id:'as-22',name:'Attic Insulation',cost:1225,unit:'1,600 sqft'},{id:'as-23',name:'New Drywall to Studs (L&M)',cost:5.2,unit:'sqft'},{id:'as-24',name:'Aluminum Wiring',cost:2450,unit:'variable'},
-{id:'as-nan-1',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'as-nan-2',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'as-nan-3',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'as-nan-4',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'as-nan-5',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'as-nan-6',name:'No Action Needed',cost:0,unit:'flat',noAction:true}]},
-{id:'exterior',name:'Exterior',icon:'exterior',multiRoom:true,items:[
-{id:'ex-01',name:'Fence Repair \u2014 Chain Link/Wood Gate',cost:225,unit:'variable'},{id:'ex-02',name:'Fence Repair \u2014 Chain Link',cost:275,unit:'LF'},{id:'ex-03',name:'Fence Repair \u2014 Privacy 6ft',cost:30,unit:'LF'},{id:'ex-04',name:'Landscaping',cost:450,unit:'variable',min:500,defaultQty:1},{id:'ex-05',name:"Vinyl Siding (10'\u00d710')",cost:300,unit:'square'},{id:'ex-06',name:'Tuck Pointing',cost:225,unit:'variable'},{id:'ex-07',name:'Exterior Paint',cost:2.6,unit:'sqft'},{id:'ex-08',name:'Exterior Wood Repair',cost:525,unit:'variable',min:500},{id:'ex-09',name:"Siding Repair (10'\u00d710')",cost:975,unit:'section'},{id:'ex-10',name:'Tree Trimming',cost:450,unit:'variable'},{id:'ex-11',name:'Tree Removal (w/o stump)',cost:1450,unit:'tree'},{id:'ex-12',name:'Stump Grinding',cost:250,unit:'stump'},{id:'ex-13',name:'Aluminum Window Paint',cost:700,unit:'house'},{id:'ex-14',name:'Windows (3×5 sash)',cost:425,unit:'ea.'},{id:'ex-15',name:'Window Repair Non-Insulated',cost:35,unit:'sf'},{id:'ex-16',name:'Window Repair Insulated',cost:40,unit:'sf'},{id:'ex-17',name:'Aluminum Framed Window Pane',cost:100,unit:'pane'},{id:'ex-18',name:'Guttering',cost:4.15,unit:'LF'},{id:'ex-19',name:'Concrete w/ Demo',cost:200,unit:'sqft'},{id:'ex-20',name:'Mowing (summer, 2wk)',cost:45,unit:'mowing',defaultQty:12},{id:'ex-21',name:'Garage Door \u2014 1 Car',cost:975,unit:'ea.'},{id:'ex-22',name:'Garage Door \u2014 2 Car',cost:1225,unit:'ea.'},{id:'ex-23',name:'Garage Conversion',cost:8850,unit:'ea.'},
-{id:'ex-nan-1',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-2',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-3',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-4',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-5',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-6',name:'No Action Needed',cost:0,unit:'flat',noAction:true},{id:'ex-nan-7',name:'No Action Needed',cost:0,unit:'flat',noAction:true}]}
-];
-
-const GROUPS={
-  'ig:flooring':{label:'Flooring',ids:['ig-nan-1','ig-01','ig-02','ig-03','ig-04','ig-05','ig-06']},
-  'ig:paint':{label:'Paint & Wall Repair',ids:['ig-nan-2','ig-07','ig-08','ig-09']},
-  'ig:doors':{label:'Doors',ids:['ig-nan-3','ig-10','ig-11','ig-12','ig-13','ig-14','ig-15','ig-16','ig-17','ig-18']},
-  'ig:pest':{label:'Pest Control',ids:['ig-nan-4','ig-23','ig-24']},
-  'ig:finish':{label:'Finish Out & Details',ids:['ig-nan-5','ig-19','ig-21','ig-22','ig-28']},
-  'ig:site':{label:'Site Services & Demo',ids:['ig-nan-6','ig-20','ig-25','ig-26','ig-27']},
-  'kt:cabinets':{label:'Cabinets',ids:['kt-nan-1','kt-01','kt-02','kt-03','kt-04','kt-05']},
-  'kt:counters':{label:'Countertops & Tile',ids:['kt-nan-2','kt-06','kt-07','kt-08','kt-09','kt-10']},
-  'kt:appliances':{label:'Appliances',ids:['kt-nan-3','kt-11','kt-12','kt-13','kt-14','kt-15','kt-16','kt-17']},
-  'ba:vanity':{label:'Vanity & Countertop',ids:['ba-nan-1','ba-01','ba-02','ba-03','ba-14']},
-  'ba:tub':{label:'Tub & Shower',ids:['ba-nan-2','ba-07','ba-08','ba-09','ba-10','ba-11','ba-12','ba-13']},
-  'ba:tile':{label:'Tile',ids:['ba-nan-3','ba-05','ba-06']},
-  'ba:fixtures':{label:'Fixtures & Ventilation',ids:['ba-nan-4','ba-04','ba-15','ba-16']},
-  'as:hvac':{label:'HVAC',ids:['as-nan-1','as-01','as-02','as-03','as-04','as-05','as-06','as-07']},
-  'as:electrical':{label:'Electrical',ids:['as-nan-2','as-10','as-11','as-18','as-19','as-20','as-24']},
-  'as:structural':{label:'Structural & Framing',ids:['as-nan-3','as-12','as-13','as-14','as-15']},
-  'as:insulation':{label:'Insulation & Drywall',ids:['as-nan-4','as-21','as-22','as-23']},
-  'as:plumbing':{label:'Plumbing & Water',ids:['as-nan-5','as-08','as-09','as-17']},
-  'as:roofing':{label:'Roofing & Exterior Systems',ids:['as-nan-6','as-16']},
-  'ex:fence':{label:'Fence',ids:['ex-nan-1','ex-01','ex-02','ex-03']},
-  'ex:siding':{label:'Siding & Wood Repair',ids:['ex-nan-2','ex-05','ex-08','ex-09']},
-  'ex:windows':{label:'Windows & Glass',ids:['ex-nan-3','ex-13','ex-14','ex-15','ex-16','ex-17']},
-  'ex:garage':{label:'Garage',ids:['ex-nan-4','ex-21','ex-22','ex-23']},
-  'ex:paint':{label:'Paint & Finishes',ids:['ex-nan-6','ex-07','ex-06']},
-  'ex:masonry':{label:'Concrete & Gutters',ids:['ex-nan-7','ex-18','ex-19']},
-  'ex:landscaping':{label:'Landscaping & Yard',ids:['ex-nan-5','ex-04','ex-10','ex-11','ex-12','ex-20']}
-};
+const CATEGORIES=[{"id":"interior","name":"Interior / General","icon":"interior","multiRoom":true,"items":[{"id":"ig-01","name":"Refinish Hardwood Floor","cost":2.35,"unit":"sqft"},{"id":"ig-02","name":"New Hardwoods 1.5\"","cost":10.0,"unit":"sqft"},{"id":"ig-03","name":"New Hardwoods 2\"","cost":4.75,"unit":"sqft"},{"id":"ig-04","name":"Hardwood Splicing","cost":8.4,"unit":"sqft"},{"id":"ig-05","name":"Vinyl Plank","cost":2.5,"unit":"sqft"},{"id":"ig-06","name":"Carpet","cost":1.9,"unit":"sqft"},{"id":"ig-07","name":"Interior Paint \u2014 2 Tone","cost":2.95,"unit":"sqft"},{"id":"ig-08","name":"Drywall Repair","cost":900.0,"unit":"1,000 sqft"},{"id":"ig-09","name":"Wallpaper Removal","cost":250.0,"unit":"room"},{"id":"ig-10","name":"Interior Door \u2014 Hollow Slab","cost":125.0,"unit":"ea."},{"id":"ig-11","name":"Interior Door Hardware (Knob + Hinges + Labor)","cost":25.0,"unit":"ea."},{"id":"ig-12","name":"Bifold Door with Framing","cost":400.0,"unit":"ea."},{"id":"ig-13","name":"Interior Door \u2014 Pre-hung","cost":200.0,"unit":"ea."},{"id":"ig-14","name":"Front Entry Door","cost":475.0,"unit":"ea.","min":500},{"id":"ig-15","name":"Front Entry Door Hardware","cost":80.0,"unit":"ea.","min":75,"defaultQty":1},{"id":"ig-16","name":"Exterior Door Hardware","cost":75.0,"unit":"handle","defaultQty":1},{"id":"ig-17","name":"Exterior Insulated Side Door (Installed)","cost":500.0,"unit":"ea."},{"id":"ig-18","name":"Sliding Glass Door","cost":1025.0,"unit":"ea."},{"id":"ig-19","name":"Trim Out (Casing, Crown, Baseboard)","cost":3.75,"unit":"LF","min":500,"defaultQty":143},{"id":"ig-20","name":"MISC / Punch List","cost":2650.0,"unit":"flat","defaultQty":1},{"id":"ig-21","name":"Finish Out Labor","cost":1350.0,"unit":"flat","defaultQty":1},{"id":"ig-22","name":"Light Fixtures","cost":70.0,"unit":"100 sqft"},{"id":"ig-23","name":"Bedbug Spray / Heat Treat","cost":475.0,"unit":"ea."},{"id":"ig-24","name":"Termite Treatment","cost":650.0,"unit":"ea."},{"id":"ig-25","name":"Demo","cost":1375.0,"unit":"variable"},{"id":"ig-26","name":"Haul Off","cost":725.0,"unit":"load"},{"id":"ig-27","name":"Final Cleaning","cost":325.0,"unit":"flat","defaultQty":1,"min":250},{"id":"ig-28","name":"Staging","cost":0.9,"unit":"sqft"},{"id":"ig-29","name":"Closet Shelving / Organizers","cost":250.0,"unit":"ea."},{"id":"ig-nan-1","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ig-nan-2","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ig-nan-3","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ig-nan-4","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ig-nan-7","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ig-nan-8","name":"No Action Needed","cost":0,"unit":"flat","noAction":true}]},{"id":"kitchen","name":"Kitchen","icon":"kitchen","multiRoom":true,"items":[{"id":"kt-01","name":"Hinges and Pulls","cost":275.0,"unit":"kitchen"},{"id":"kt-02","name":"Cabinets Uppers","cost":125.0,"unit":"LF"},{"id":"kt-03","name":"Cabinets Lowers","cost":150.0,"unit":"LF"},{"id":"kt-04","name":"Cabinet Door Faces Only","cost":80.0,"unit":"door"},{"id":"kt-05","name":"Cabinets (Labor & Paint)","cost":1100.0,"unit":"kitchen"},{"id":"kt-06","name":"Granite + 4\" Splash Guard","cost":40.0,"unit":"LF","min":1050},{"id":"kt-07","name":"Backsplash","cost":725.0,"unit":"house"},{"id":"kt-08","name":"Misc Woodwork","cost":500.0,"unit":"variable"},{"id":"kt-09","name":"Tile \u2014 Large Areas","cost":6.45,"unit":"sqft"},{"id":"kt-10","name":"Tile \u2014 Small Areas","cost":10.0,"unit":"sqft"},{"id":"kt-11","name":"Undermount Kitchen Sink","cost":325.0,"unit":"ea."},{"id":"kt-12","name":"Microwave / Hood","cost":500.0,"unit":"ea."},{"id":"kt-13","name":"Range","cost":725.0,"unit":"ea."},{"id":"kt-14","name":"Wall Oven","cost":1075.0,"unit":"ea."},{"id":"kt-15","name":"Cooktop","cost":550.0,"unit":"ea."},{"id":"kt-16","name":"Dishwasher","cost":575.0,"unit":"ea."},{"id":"kt-17","name":"Fridge","cost":1175.0,"unit":"ea."},{"id":"kt-nan-1","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"kt-nan-2","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"kt-nan-3","name":"No Action Needed","cost":0,"unit":"flat","noAction":true}]},{"id":"bathroom","name":"Bathroom","icon":"bathroom","multiRoom":true,"items":[{"id":"ba-01","name":"Granite ($/LF)","cost":35.0,"unit":"LF"},{"id":"ba-02","name":"New Bottom Vanity","cost":125.0,"unit":"LF"},{"id":"ba-03","name":"Home Depot Vanity w/ Sink (18\")","cost":225.0,"unit":"ea."},{"id":"ba-04","name":"Toilet","cost":150.0,"unit":"ea."},{"id":"ba-05","name":"Tile \u2014 Large Areas","cost":5.8,"unit":"sqft"},{"id":"ba-06","name":"Tile \u2014 Small Areas","cost":10.0,"unit":"sqft"},{"id":"ba-07","name":"Reglaze Tub or Chemical Clean","cost":350.0,"unit":"ea."},{"id":"ba-08","name":"Reglaze Tub + Surround","cost":750.0,"unit":"ea."},{"id":"ba-09","name":"Reglaze Shower","cost":1325.0,"unit":"ea."},{"id":"ba-10","name":"Tiled Shower Tear Out + Tile Install","cost":3100.0,"unit":"ea."},{"id":"ba-11","name":"Tub Tile Surround Tear Out + Tile Install (incl. tub)","cost":2250.0,"unit":"ea."},{"id":"ba-12","name":"Shower Plastic Insert Tear Out + New Insert","cost":825.0,"unit":"ea."},{"id":"ba-13","name":"Tub Tear Out + New Insert & Tub","cost":1575.0,"unit":"ea."},{"id":"ba-14","name":"Undermount Sink","cost":150.0,"unit":"ea."},{"id":"ba-15","name":"Mirror","cost":200.0,"unit":"ea."},{"id":"ba-16","name":"HVL (needed if no window)","cost":275.0,"unit":"ea."},{"id":"ba-nan-1","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ba-nan-2","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ba-nan-3","name":"No Action Needed","cost":0,"unit":"flat","noAction":true}]},{"id":"systems","name":"Systems & Structure","icon":"systems","multiRoom":true,"items":[{"id":"as-01","name":"Furnace","cost":3350.0,"unit":"ea.","hasYear":true},{"id":"as-02","name":"Condensing Unit","cost":3300.0,"unit":"ea.","hasYear":true},{"id":"as-03","name":"Package Unit","cost":4700.0,"unit":"ea."},{"id":"as-04","name":"A-Coil (if no condensing unit)","cost":1625.0,"unit":"ea."},{"id":"as-05","name":"Ducting (if NO HVAC)","cost":3200.0,"unit":"ea."},{"id":"as-06","name":"Duct Cleaning \u2014 Floor Vents","cost":550.0,"unit":"ea."},{"id":"as-07","name":"Window Unit Replacement 220","cost":575.0,"unit":"ea."},{"id":"as-08","name":"Hot Water Heater w/ Expansion Tank","cost":1425.0,"unit":"ea.","hasYear":true},{"id":"as-09","name":"Hot Water Heater Expansion Tank Only","cost":200.0,"unit":"ea."},{"id":"as-10","name":"Switches / Outlets","cost":1400.0,"unit":"house"},{"id":"as-11","name":"Standard Electrical","cost":1650.0,"unit":"house","defaultQty":1},{"id":"as-12","name":"Subfloor","cost":8.2,"unit":"sqft"},{"id":"as-13","name":"Framing","cost":950.0,"unit":"variable"},{"id":"as-14","name":"Structural (Pier)","cost":375.0,"unit":"pier"},{"id":"as-15","name":"Structural Foam Injection","cost":5.85,"unit":"sqft of affected area"},{"id":"as-16","name":"Roof","cost":1100.0,"unit":"225 sqft L&M","min":1000},{"id":"as-17","name":"Plumbing","cost":1000.0,"unit":"variable","defaultQty":1},{"id":"as-18","name":"Electrical Panel Swap to 200A","cost":2350.0,"unit":"ea."},{"id":"as-19","name":"Full Electrical Rewire (to Studs)","cost":5.65,"unit":"sqft"},{"id":"as-20","name":"Full Electrical Rewire (leaving Drywall)","cost":9.15,"unit":"sqft"},{"id":"as-21","name":"Wall Insulation (to Studs)","cost":1.2,"unit":"sqft"},{"id":"as-22","name":"Attic Insulation","cost":1225.0,"unit":"1,600 sqft house"},{"id":"as-23","name":"New Drywall to Studs (L&M)","cost":5.2,"unit":"sqft"},{"id":"as-24","name":"Aluminum Wiring","cost":2450.0,"unit":"variable"},{"id":"as-nan-1","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"as-nan-2","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"as-nan-3","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"as-nan-4","name":"No Action Needed","cost":0,"unit":"flat","noAction":true}]},{"id":"exterior","name":"Exterior","icon":"exterior","multiRoom":true,"items":[{"id":"ex-01","name":"Fence Repair \u2014 Chain Link / Wood Gate","cost":225.0,"unit":"variable"},{"id":"ex-02","name":"Fence Repair \u2014 Chain Link","cost":275.0,"unit":"LF"},{"id":"ex-03","name":"Fence Repair \u2014 Privacy 6ft","cost":30.0,"unit":"LF"},{"id":"ex-04","name":"Landscaping","cost":450.0,"unit":"variable","defaultQty":1,"min":500},{"id":"ex-05","name":"Vinyl Siding (10'x10')","cost":300.0,"unit":"square"},{"id":"ex-06","name":"Tuck Pointing","cost":225.0,"unit":"variable"},{"id":"ex-07","name":"Exterior Paint","cost":2.6,"unit":"sqft"},{"id":"ex-08","name":"Exterior Wood Repair","cost":525.0,"unit":"variable","defaultQty":1,"min":500},{"id":"ex-09","name":"Siding Repair (10'x10')","cost":975.0,"unit":"section"},{"id":"ex-10","name":"Tree Trimming","cost":450.0,"unit":"variable"},{"id":"ex-11","name":"Tree Removal (w/o stump)","cost":1450.0,"unit":"tree"},{"id":"ex-12","name":"Stump Grinding","cost":250.0,"unit":"stump"},{"id":"ex-13","name":"Aluminum Window Paint (Int/Ext)","cost":700.0,"unit":"house"},{"id":"ex-14","name":"Windows (3x5 sash)","cost":425.0,"unit":"ea."},{"id":"ex-15","name":"Window Repair \u2014 Non-Insulated (6x6+)","cost":35.0,"unit":"sf"},{"id":"ex-16","name":"Window Repair \u2014 Insulated (6x6+)","cost":40.0,"unit":"sf"},{"id":"ex-17","name":"Aluminum Framed Window Pane","cost":100.0,"unit":"pane"},{"id":"ex-18","name":"Guttering","cost":4.15,"unit":"LF"},{"id":"ex-19","name":"Concrete w/ Demo","cost":200.0,"unit":"sqft"},{"id":"ex-20","name":"Mowing (summer, every 2 weeks)","cost":45.0,"unit":"mowing","defaultQty":12},{"id":"ex-21","name":"Garage Door \u2014 1 Car","cost":975.0,"unit":"ea."},{"id":"ex-22","name":"Garage Door \u2014 2 Car (Installed)","cost":1225.0,"unit":"ea."},{"id":"ex-23","name":"Garage Conversion","cost":8850.0,"unit":"ea."},{"id":"ex-nan-1","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ex-nan-2","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ex-nan-3","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ex-nan-4","name":"No Action Needed","cost":0,"unit":"flat","noAction":true},{"id":"ex-nan-5","name":"No Action Needed","cost":0,"unit":"flat","noAction":true}]}];
+const GROUPS={"ig:flooring":{"label":"Flooring","ids":["ig-nan-1","ig-01","ig-02","ig-03","ig-04","ig-05","ig-06"]},"ig:paint":{"label":"Paint & Wall Repair","ids":["ig-nan-2","ig-07","ig-08","ig-09","ig-19","ig-21","ig-22","ig-27","ig-28"]},"ig:doors":{"label":"Doors","ids":["ig-nan-3","ig-10","ig-11","ig-13","ig-14","ig-15","ig-16","ig-17","ig-18","ig-20"]},"ig:pest":{"label":"Pest Control","ids":["ig-nan-4","ig-23","ig-24","ig-25","ig-26"]},"ig:closet":{"label":"Closet","ids":["ig-nan-7","ig-12","ig-29"]},"ig:lighting":{"label":"Lighting","ids":["ig-nan-8","ig-22"]},"kt:cabinets":{"label":"Cabinets","ids":["kt-nan-1","kt-01","kt-02","kt-03","kt-04","kt-05"]},"kt:counters":{"label":"Countertops & Tile","ids":["kt-nan-2","kt-06","kt-07","kt-08","kt-09","kt-10"]},"kt:appliances":{"label":"Appliances","ids":["kt-nan-3","kt-11","kt-12","kt-13","kt-14","kt-15","kt-16","kt-17"]},"ba:vanity":{"label":"Vanity & Countertop","ids":["ba-nan-1","ba-01","ba-02","ba-03","ba-14","ba-04","ba-15"]},"ba:tub":{"label":"Tub & Shower","ids":["ba-nan-2","ba-07","ba-08","ba-09","ba-10","ba-11","ba-12","ba-13","ba-16"]},"ba:tile":{"label":"Tile","ids":["ba-nan-3","ba-05","ba-06"]},"as:hvac":{"label":"HVAC","ids":["as-nan-1","as-01","as-02","as-03","as-04","as-05","as-06","as-07","as-08","as-09"]},"as:electrical":{"label":"Electrical","ids":["as-nan-2","as-10","as-11","as-18","as-19","as-20","as-24"]},"as:structural":{"label":"Structural & Roofing","ids":["as-nan-3","as-12","as-13","as-14","as-15","as-16","as-17"]},"as:insulation":{"label":"Insulation & Drywall","ids":["as-nan-4","as-21","as-22","as-23"]},"ex:fence":{"label":"Fence","ids":["ex-nan-1","ex-01","ex-02","ex-03"]},"ex:siding":{"label":"Siding & Wood Repair","ids":["ex-nan-2","ex-05","ex-08","ex-09","ex-06","ex-07","ex-18"]},"ex:windows":{"label":"Windows & Glass","ids":["ex-nan-3","ex-13","ex-14","ex-15","ex-16","ex-17"]},"ex:garage":{"label":"Garage","ids":["ex-nan-4","ex-21","ex-22","ex-23"]},"ex:trees":{"label":"Trees & Landscaping","ids":["ex-nan-5","ex-10","ex-11","ex-12","ex-04","ex-19","ex-20"]}};
 const ITEM_TO_GROUP={};for(const[gid,g]of Object.entries(GROUPS))for(const id of g.ids)ITEM_TO_GROUP[id]=gid;
 const CAT_COLORS=['#E8621C','#3b82f6','#8b5cf6','#10B981','#F59E0B'];
 
@@ -682,7 +767,7 @@ async function dbSaveGlobalPrices(o){try{const db=await getDB();return new Promi
 
 async function saveCurrentState(){
   if(!S.currentProjectId)return;
-  const p={id:S.currentProjectId,name:S.currentProjectName,savedAt:new Date().toISOString(),items:S.items,photos:S.photos,voiceMemos:S.voiceMemos,rooms:S.rooms,property:S.property,projectPriceOverrides:S.projectPriceOverrides,dealAnalyzer:S.dealAnalyzer,companyName:S.companyName,estimatorName:S.estimatorName,estimatorEmail:S.estimatorEmail,estimatorPhone:S.estimatorPhone};
+  const p={id:S.currentProjectId,name:S.currentProjectName,savedAt:new Date().toISOString(),items:S.items,photos:S.photos,voiceMemos:S.voiceMemos,rooms:S.rooms,property:S.property,projectPriceOverrides:S.projectPriceOverrides,dealAnalyzer:S.dealAnalyzer,companyName:S.companyName,estimatorName:S.estimatorName,estimatorEmail:S.estimatorEmail,estimatorPhone:S.estimatorPhone,customItems:S.customItems,deletedItemIds:S.deletedItemIds};
   await dbSaveProject(p);
   try{
     const cleanProj={...p};
@@ -709,11 +794,11 @@ const DEFAULT_ROOMS={
 const DEFAULT_PROP={beds:'',baths:'',sqft:'',yearBuilt:'',type:'single'};
 const DEFAULT_DEAL={arv:'',purchasePrice:'',closingPct:0,holdingMonths:0,monthlyHolding:'',financingRate:0,contingencyPct:0};
 
-const S={currentCat:0,showSummary:false,currentProjectId:null,currentProjectName:'New Estimate',items:{},photos:{},voiceMemos:{},expandedGroups:[],rooms:JSON.parse(JSON.stringify(DEFAULT_ROOMS)),property:{...DEFAULT_PROP},projectPriceOverrides:{},globalPriceOverrides:{},dealAnalyzer:{...DEFAULT_DEAL},propOpen:true,prevTotal:0,companyName:localStorage.getItem('sparkCompany')||'',estimatorName:localStorage.getItem('sparkEstimator')||'',estimatorEmail:localStorage.getItem('sparkEmail')||'',estimatorPhone:localStorage.getItem('sparkPhone')||''};
+const S={currentCat:0,showSummary:false,currentProjectId:null,currentProjectName:'New Estimate',items:{},photos:{},voiceMemos:{},expandedGroups:[],rooms:JSON.parse(JSON.stringify(DEFAULT_ROOMS)),property:{...DEFAULT_PROP},projectPriceOverrides:{},globalPriceOverrides:{},dealAnalyzer:{...DEFAULT_DEAL},propOpen:true,prevTotal:0,companyName:localStorage.getItem('sparkCompany')||'',estimatorName:localStorage.getItem('sparkEstimator')||'',estimatorEmail:localStorage.getItem('sparkEmail')||'',estimatorPhone:localStorage.getItem('sparkPhone')||'',customItems:[],deletedItemIds:[]};
 
-function initItems(){S.items={};CATEGORIES.forEach(cat=>{if(cat.multiRoom)(S.rooms[cat.id]?.instances||[]).forEach(inst=>{cat.items.forEach(it=>{S.items[`${inst.id}:${it.id}`]={checked:false,qty:'',year:'',notes:''}})});else cat.items.forEach(it=>{S.items[it.id]={checked:false,qty:'',year:'',notes:''}})})}
+function initItems(){S.items={};CATEGORIES.forEach(cat=>{if(cat.multiRoom)(S.rooms[cat.id]?.instances||[]).forEach(inst=>{cat.items.forEach(it=>{S.items[`${inst.id}:${it.id}`]={checked:false,qty:'',year:'',notes:''}})});else cat.items.forEach(it=>{S.items[it.id]={checked:false,qty:'',year:'',notes:''}})});if(S.customItems){S.customItems.forEach(it=>{const category=CATEGORIES.find(c=>c.items.some(i=>ITEM_TO_GROUP[i.id]===it.groupId));if(category&&category.multiRoom){(S.rooms[category.id]?.instances||[]).forEach(inst=>{S.items[`${inst.id}:${it.id}`]={checked:false,qty:'',year:'',notes:''}})}else{S.items[it.id]={checked:false,qty:'',year:'',notes:''}}})}S.deletedItemIds=[]}
 
-function loadProjectIntoState(p){S.currentProjectId=p.id;S.currentProjectName=p.name;S.items=p.items||{};S.photos=p.photos||{};S.voiceMemos=p.voiceMemos||{};S.rooms=p.rooms||JSON.parse(JSON.stringify(DEFAULT_ROOMS));CATEGORIES.forEach(cat=>{if(cat.multiRoom&&!S.rooms[cat.id]){S.rooms[cat.id]=JSON.parse(JSON.stringify(DEFAULT_ROOMS[cat.id]||{instances:[],current:0}))}});S.property=p.property||{...DEFAULT_PROP};S.projectPriceOverrides=p.projectPriceOverrides||{};S.dealAnalyzer=p.dealAnalyzer||{...DEFAULT_DEAL};S.companyName=p.companyName||localStorage.getItem('sparkCompany')||'';S.estimatorName=p.estimatorName||localStorage.getItem('sparkEstimator')||'';S.estimatorEmail=p.estimatorEmail||localStorage.getItem('sparkEmail')||'';S.estimatorPhone=p.estimatorPhone||localStorage.getItem('sparkPhone')||'';S.currentCat=0;S.showSummary=false;S.expandedGroups=[];
+function loadProjectIntoState(p){S.currentProjectId=p.id;S.currentProjectName=p.name;S.items=p.items||{};S.photos=p.photos||{};S.voiceMemos=p.voiceMemos||{};S.rooms=p.rooms||JSON.parse(JSON.stringify(DEFAULT_ROOMS));CATEGORIES.forEach(cat=>{if(cat.multiRoom&&!S.rooms[cat.id]){S.rooms[cat.id]=JSON.parse(JSON.stringify(DEFAULT_ROOMS[cat.id]||{instances:[],current:0}))}});S.property=p.property||{...DEFAULT_PROP};S.projectPriceOverrides=p.projectPriceOverrides||{};S.dealAnalyzer=p.dealAnalyzer||{...DEFAULT_DEAL};S.companyName=p.companyName||localStorage.getItem('sparkCompany')||'';S.estimatorName=p.estimatorName||localStorage.getItem('sparkEstimator')||'';S.estimatorEmail=p.estimatorEmail||localStorage.getItem('sparkEmail')||'';S.estimatorPhone=p.estimatorPhone||localStorage.getItem('sparkPhone')||'';S.customItems=p.customItems||[];S.deletedItemIds=p.deletedItemIds||[];S.currentCat=0;S.showSummary=false;S.expandedGroups=[];
   CATEGORIES.forEach(cat => {
     if (cat.multiRoom) {
       (S.rooms[cat.id]?.instances || []).forEach(inst => {
@@ -763,6 +848,118 @@ function openModal(title,ph,val,cb){document.getElementById('modal-select-wrap')
 function openRoomModal(catId,cb){const selectWrap=document.getElementById('modal-select-wrap');const select=document.getElementById('modal-select');const title=document.getElementById('modal-title');const inp=document.getElementById('modal-input');title.textContent='Add Room';inp.placeholder='e.g. Master Bedroom';if(catId==='interior'){selectWrap.style.display='block';select.innerHTML=`<option value="Bedroom">Bedroom</option><option value="Living/Common">Living/Common</option><option value="Interior/General">Interior/General</option>`;select.onchange=()=>{const type=select.value;const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type===type).length+1;inp.value=`${type} ${count}`};const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type==='Bedroom').length+1;inp.value=`Bedroom ${count}`}else{selectWrap.style.display='none';const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];inp.value=`${cat.name} ${rd.instances.length+1}`}pendingModal=name=>{const type=catId==='interior'?select.value:CATEGORIES.find(c=>c.id===catId).name;cb({name,type})};document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function confirmModal(){const v=document.getElementById('modal-input').value.trim();if(v&&pendingModal)pendingModal(v);closeModal()}
 function closeModal(){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null}
+let customItemGid = null;
+let customItemRid = null;
+function openCustomItemModal(gid, rid) {
+  customItemGid = gid;
+  customItemRid = rid;
+  document.getElementById('custom-item-name').value = '';
+  document.getElementById('custom-item-cost').value = '';
+  document.getElementById('custom-item-unit').value = 'ea.';
+  document.getElementById('custom-item-modal').classList.add('open');
+  setTimeout(() => document.getElementById('custom-item-name').focus(), 80);
+}
+function closeCustomItemModal() {
+  document.getElementById('custom-item-modal').classList.remove('open');
+  customItemGid = null;
+  customItemRid = null;
+}
+function confirmCustomItem() {
+  const name = document.getElementById('custom-item-name').value.trim();
+  const costVal = parseFloat(document.getElementById('custom-item-cost').value);
+  const unit = document.getElementById('custom-item-unit').value;
+  if (!name || isNaN(costVal) || costVal < 0) {
+    showToast('Please enter a valid name and cost');
+    return;
+  }
+  pushUndo();
+  const id = 'custom-' + Date.now();
+  const customItem = { id, name, cost: costVal, unit, groupId: customItemGid };
+  S.customItems = S.customItems || [];
+  S.customItems.push(customItem);
+  const category = CATEGORIES.find(c => c.items.some(i => ITEM_TO_GROUP[i.id] === customItemGid));
+  if (category) {
+    if (category.multiRoom) {
+      (S.rooms[category.id]?.instances || []).forEach(inst => {
+        S.items[`${inst.id}:${id}`] = { checked: false, qty: '', year: '', notes: '' };
+      });
+    } else {
+      S.items[id] = { checked: false, qty: '', year: '', notes: '' };
+    }
+  } else {
+    if (customItemRid) {
+      S.items[`${customItemRid}:${id}`] = { checked: false, qty: '', year: '', notes: '' };
+    } else {
+      S.items[id] = { checked: false, qty: '', year: '', notes: '' };
+    }
+  }
+  const expandedKey = customItemRid ? `${customItemRid}:${customItemGid}` : customItemGid;
+  if (!S.expandedGroups.includes(expandedKey)) {
+    S.expandedGroups.push(expandedKey);
+  }
+  saveCurrentState();
+  render();
+  closeCustomItemModal();
+  showToast(`Added item "${name}"`);
+}
+let overrideItemId = null;
+function openPriceOverrideModal(itemId) {
+  const item = findItemDef(itemId);
+  if (!item) return;
+  overrideItemId = itemId;
+  document.getElementById('pom-title').textContent = `Customize Price`;
+  document.getElementById('pom-info').textContent = `Standard price: $${item.cost.toFixed(2)} / ${item.unit}`;
+  const projOverride = S.projectPriceOverrides[itemId];
+  const globalOverride = S.globalPriceOverrides[itemId];
+  const currentOverride = projOverride != null ? projOverride : (globalOverride != null ? globalOverride : item.cost);
+  document.getElementById('pom-cost-input').value = currentOverride;
+  if (projOverride != null) {
+    document.querySelector('input[name="pom-scope"][value="project"]').checked = true;
+  } else if (globalOverride != null) {
+    document.querySelector('input[name="pom-scope"][value="global"]').checked = true;
+  } else {
+    document.querySelector('input[name="pom-scope"][value="project"]').checked = true;
+  }
+  document.getElementById('price-override-modal').classList.add('open');
+  setTimeout(() => document.getElementById('pom-cost-input').focus(), 80);
+}
+function closePriceOverrideModal() {
+  document.getElementById('price-override-modal').classList.remove('open');
+  overrideItemId = null;
+}
+async function confirmPriceOverride() {
+  if (!overrideItemId) return;
+  const costVal = parseFloat(document.getElementById('pom-cost-input').value);
+  if (isNaN(costVal) || costVal < 0) {
+    showToast('Please enter a valid cost');
+    return;
+  }
+  const scope = document.querySelector('input[name="pom-scope"]:checked').value;
+  pushUndo();
+  if (scope === 'project') {
+    delete S.globalPriceOverrides[overrideItemId];
+    S.projectPriceOverrides[overrideItemId] = costVal;
+  } else {
+    delete S.projectPriceOverrides[overrideItemId];
+    S.globalPriceOverrides[overrideItemId] = costVal;
+    await dbSaveGlobalPrices(S.globalPriceOverrides);
+  }
+  saveCurrentState();
+  render();
+  closePriceOverrideModal();
+  showToast('Price override saved');
+}
+async function resetPriceOverride() {
+  if (!overrideItemId) return;
+  pushUndo();
+  delete S.projectPriceOverrides[overrideItemId];
+  delete S.globalPriceOverrides[overrideItemId];
+  await dbSaveGlobalPrices(S.globalPriceOverrides);
+  saveCurrentState();
+  render();
+  closePriceOverrideModal();
+  showToast('Price reset to default');
+}
 function openPresetModal(){document.getElementById('preset-modal').classList.add('open')}
 function closePresetModal(){document.getElementById('preset-modal').classList.remove('open')}
 
@@ -826,13 +1023,60 @@ function renderCategoryView(){const cat=CATEGORIES[S.currentCat];if(cat.multiRoo
 
 function renderRoomTabs(catId){const rd=S.rooms[catId]||{instances:[],current:0};const cat=CATEGORIES.find(c=>c.id===catId);return`<div class="room-tabs">${rd.instances.map((inst,i)=>{const a=i===rd.current;const rt=cat?calcRoomTotal(cat,inst):0;return`<div class="room-tab ${a?'active':''}"><button class="room-tab-name" data-action="switch-room" data-cat="${catId}" data-index="${i}">${inst.name}${rt>0?` <span style="font-size:11px;opacity:0.7">${fmt(rt)}</span>`:''}</button><button class="room-tab-edit" data-action="rename-room" data-cat="${catId}" data-index="${i}">${I.pen}</button>${rd.instances.length>1?`<button class="room-tab-del" data-action="remove-room" data-cat="${catId}" data-index="${i}">${I.del}</button>`:''}</div>`}).join('')}<button class="room-tab-add" data-action="add-room" data-cat="${catId}">+ Add</button></div>`}
 
-function buildSlots(items,roomId){const slots=[];const seen=new Set();for(const it of items){const gid=ITEM_TO_GROUP[it.id];if(gid){if(!seen.has(gid)){seen.add(gid);const gi=GROUPS[gid].ids.map(id=>items.find(i=>i.id===id)).filter(Boolean);const entries=gi.map(i=>({item:i,stateId:roomId?`${roomId}:${i.id}`:i.id}));slots.push({type:'group',gid,label:GROUPS[gid].label,entries,roomId})}}else slots.push({type:'standalone',item:it,stateId:roomId?`${roomId}:${it.id}`:it.id})}return slots}
+function getAllowedGroupsForType(type) {
+  if (!type) return null;
+  if (type === 'Bedroom') return ['ig:flooring', 'ig:paint', 'ig:doors', 'ig:closet'];
+  if (type === 'Living/Common') return ['ig:flooring', 'ig:paint', 'ig:doors', 'ig:lighting'];
+  if (type === 'Interior/General') return ['ig:flooring', 'ig:paint', 'ig:doors', 'ig:pest'];
+  if (type === 'Bathroom') return ['ba:vanity', 'ba:tub', 'ba:tile'];
+  if (type === 'Kitchen') return ['kt:cabinets', 'kt:counters', 'kt:appliances'];
+  if (type === 'Systems & Structure') return ['as:hvac', 'as:electrical', 'as:structural', 'as:insulation'];
+  if (type === 'Exterior') return ['ex:fence', 'ex:siding', 'ex:windows', 'ex:garage', 'ex:trees'];
+  return null;
+}
 
-function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roomId?`${roomId}:${gid}`:gid;const isOpen=S.expandedGroups.includes(ek);const cc=entries.filter(e=>S.items[e.stateId]?.checked).length;const gt=entries.reduce((s,e)=>s+calcItem(e.item,S.items[e.stateId]),0);return`<div class="group-card ${cc>0?'has-items':''}" data-group-card data-gid="${ek}" style="animation-delay:${idx*0.04}s"><button class="group-header" data-action="toggle-group" data-gid="${ek}"><div class="group-left"><span class="group-chevron ${isOpen?'open':''}">${I.chev}</span><span class="group-label">${label}</span>${cc>0?`<span class="group-badge">${cc} ✓</span>`:''}</div><span class="group-total ${gt>0?'has-value':'no-value'}" data-group-total>${gt>0?fmt(gt):'\u2014'}</span></button>${isOpen?`<div class="group-body">${entries.map(e=>renderLineItem(e.item,e.stateId,true)).join('')}</div>`:''}</div>`}
+function buildSlots(items,roomId){
+  const slots=[];
+  const seen=new Set();
+  let roomType=null;
+  if(roomId){
+    for(const catId in S.rooms){
+      const inst=S.rooms[catId].instances.find(i=>i.id===roomId);
+      if(inst){
+        roomType=inst.type;
+        break;
+      }
+    }
+  }
+  const allowedGroups=getAllowedGroupsForType(roomType);
+  for(const it of items){
+    if(S.deletedItemIds&&S.deletedItemIds.includes(it.id))continue;
+    const gid=ITEM_TO_GROUP[it.id];
+    if(gid){
+      if(allowedGroups&&!allowedGroups.includes(gid))continue;
+      if(!seen.has(gid)){
+        seen.add(gid);
+        const groupItems=GROUPS[gid].ids.map(id=>items.find(i=>i.id===id)).filter(Boolean);
+        if(S.customItems){
+          const custom=S.customItems.filter(i=>i.groupId===gid);
+          groupItems.push(...custom);
+        }
+        const entries=groupItems.map(i=>({item:i,stateId:roomId?`${roomId}:${i.id}`:i.id}));
+        slots.push({type:'group',gid,label:GROUPS[gid].label,entries,roomId})
+      }
+    }else{
+      if(allowedGroups) continue; // Standalone items belong to overall categories, skip if restricted room type
+      slots.push({type:'standalone',item:it,stateId:roomId?`${roomId}:${it.id}`:it.id})
+    }
+  }
+  return slots;
+}
+
+function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roomId?`${roomId}:${gid}`:gid;const isOpen=S.expandedGroups.includes(ek);const cc=entries.filter(e=>S.items[e.stateId]?.checked).length;const gt=entries.reduce((s,e)=>s+calcItem(e.item,S.items[e.stateId]),0);return`<div class="group-card ${cc>0?'has-items':''}" data-group-card data-gid="${ek}" style="animation-delay:${idx*0.04}s"><button class="group-header" data-action="toggle-group" data-gid="${ek}"><div class="group-left"><span class="group-chevron ${isOpen?'open':''}">${I.chev}</span><span class="group-label">${label}</span>${cc>0?`<span class="group-badge">${cc} ✓</span>`:''}</div><span class="group-total ${gt>0?'has-value':'no-value'}" data-group-total>${gt>0?fmt(gt):'\u2014'}</span></button>${isOpen?`<div class="group-body">${entries.map(e=>renderLineItem(e.item,e.stateId,true)).join('')}<div class="group-add-item-row"><button class="group-add-item-btn" data-action="add-custom-item" data-gid="${gid}" data-rid="${roomId||''}">${I.cam}<span>+ Add Line Item</span></button></div></div>`:''}</div>`}
 
 function renderLineItem(item,sid,grouped){const s=S.items[sid]||{checked:false,qty:'',year:'',notes:''};const cls=grouped?`item-card item-card-grouped ${s.checked?'checked':''}`:`item-card item-card-standalone ${s.checked?'checked':''}`;if(item.noAction)return`<div class="${cls}"><div class="nan-card"><div class="nan-inner" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><span class="nan-label ${s.checked?'on':''}">No action needed</span></div></div></div>`;
 const total=calcItem(item,s);const cost=getItemCost(item);const costStr='$'+cost.toLocaleString('en-US',{minimumFractionDigits:2})+' / '+item.unit;const over=isOverridden(item);const meta=item.min?`min $${item.min.toLocaleString()}`:'';const photos=S.photos[sid]||[];const memos=S.voiceMemos[sid]||[];const recording=isRecording(sid);
-return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span></div><div class="item-cost-label">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="voice-memo"><audio controls src="${m.dataUrl}"></audio><button class="voice-del" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
+return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="voice-memo"><audio controls src="${m.dataUrl}"></audio><button class="voice-del" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
 
 function renderBottomNav(){const first=S.currentCat===0;const last=S.currentCat===CATEGORIES.length-1;return`<div class="bottom-nav pb-safe"><div class="bottom-nav-inner"><button class="nav-btn nav-btn-secondary" data-action="prev-cat" ${first?'disabled':''}>← Previous</button>${!last?'<button class="nav-btn nav-btn-primary" data-action="next-cat">Next →</button>':'<button class="nav-btn nav-btn-primary" data-action="show-summary">View Summary</button>'}</div></div>`}
 
@@ -917,6 +1161,36 @@ if(action==='switch-cat'){S.currentCat=parseInt(btn.dataset.index);render();docu
 if(action==='prev-cat'){S.currentCat=Math.max(0,S.currentCat-1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='next-cat'){S.currentCat=Math.min(CATEGORIES.length-1,S.currentCat+1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='toggle-group'){const gid=btn.dataset.gid;const scr=document.getElementById('scroll-area');const st=scr?scr.scrollTop:0;const idx=S.expandedGroups.indexOf(gid);if(idx>=0)S.expandedGroups.splice(idx,1);else S.expandedGroups.push(gid);render();if(scr)requestAnimationFrame(()=>document.getElementById('scroll-area')?.scrollTo(0,st));return}
+if(action==='add-custom-item'){
+  const gid = btn.dataset.gid;
+  const rid = btn.dataset.rid;
+  openCustomItemModal(gid, rid);
+  return;
+}
+if(action==='delete-item'){
+  const itemId = btn.dataset.id;
+  const sid = btn.dataset.sid;
+  if (!confirm('Are you sure you want to delete this line item?')) return;
+  pushUndo();
+  S.deletedItemIds = S.deletedItemIds || [];
+  S.deletedItemIds.push(itemId);
+  if (sid && S.items[sid]) {
+    S.items[sid].checked = false;
+    S.items[sid].qty = '';
+  }
+  if (itemId.startsWith('custom-')) {
+    S.customItems = (S.customItems || []).filter(i => i.id !== itemId);
+  }
+  saveCurrentState();
+  render();
+  showToast('Item deleted');
+  return;
+}
+if(action==='override-price'){
+  const itemId = btn.dataset.id;
+  openPriceOverrideModal(itemId);
+  return;
+}
 if(action==='switch-room'){S.rooms[btn.dataset.cat].current=parseInt(btn.dataset.index);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='rename-room'){const catId=btn.dataset.cat;const idx=parseInt(btn.dataset.index);const inst=S.rooms[catId].instances[idx];openModal('Rename Room','e.g. Master Bath',inst.name,name=>{pushUndo();inst.name=name;saveCurrentState();render()});return}
 if(action==='add-room'){const catId=btn.dataset.cat;openRoomModal(catId,({name,type})=>{pushUndo();const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];const id=catId.charAt(0)+Date.now();rd.instances.push({id,name,type});cat.items.forEach(it=>{S.items[`${id}:${it.id}`]={checked:false,qty:'',year:'',notes:''}});rd.current=rd.instances.length-1;saveCurrentState();render();showToast(`Added ${name}`)});return}
@@ -968,7 +1242,60 @@ let selectedPreset='cosmetic';
 document.getElementById('preset-modal').addEventListener('click',e=>{const card=e.target.closest('.preset-card');if(card){document.querySelectorAll('.preset-card').forEach(el=>el.classList.remove('selected'));card.classList.add('selected');selectedPreset=card.dataset.preset}});
 document.getElementById('preset-confirm').addEventListener('click',()=>{const sqft=parseInt(document.getElementById('preset-sqft-input').value)||1500;applyRehabPreset(selectedPreset,sqft);closePresetModal()});
 document.getElementById('preset-cancel').addEventListener('click',closePresetModal);
+
+document.getElementById('pom-confirm').addEventListener('click',confirmPriceOverride);
+document.getElementById('pom-cancel').addEventListener('click',closePriceOverrideModal);
+document.getElementById('pom-reset').addEventListener('click',resetPriceOverride);
+document.getElementById('price-override-bg').addEventListener('click',closePriceOverrideModal);
+document.getElementById('pom-cost-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPriceOverride();if(e.key==='Escape')closePriceOverrideModal()});
+
+document.getElementById('upload-csv-btn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.csv';
+  input.style.cssText = 'position:fixed;top:-999px;opacity:0';
+  document.body.appendChild(input);
+  input.onchange = async () => {
+    document.body.removeChild(input);
+    if (!input.files?.length) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const text = e.target.result;
+        const parsed = parseCSV(text);
+        if (!parsed || !parsed.length || !parsed[0].id) {
+          showToast('Invalid CSV format. Must contain "id" column');
+          return;
+        }
+        pushUndo();
+        parsed.forEach(row => {
+          if (row.id && row.cost != null) {
+            const costVal = parseFloat(row.cost);
+            if (!isNaN(costVal)) {
+              S.globalPriceOverrides[row.id] = costVal;
+            }
+          }
+        });
+        await dbSaveGlobalPrices(S.globalPriceOverrides);
+        saveCurrentState();
+        render();
+        closePanel();
+        showToast('Pricing updated globally from CSV');
+      } catch (err) {
+        showToast('Failed to parse CSV');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
 document.getElementById('preset-modal-bg').addEventListener('click',closePresetModal);
+
+document.getElementById('custom-item-confirm').addEventListener('click',confirmCustomItem);
+document.getElementById('custom-item-cancel').addEventListener('click',closeCustomItemModal);
+document.getElementById('custom-item-bg').addEventListener('click',closeCustomItemModal);
+document.getElementById('custom-item-name').addEventListener('keydown',e=>{if(e.key==='Enter')confirmCustomItem();if(e.key==='Escape')closeCustomItemModal()});
 
 // Settings & Branding
 document.getElementById('brand-company').addEventListener('input',e=>{S.companyName=e.target.value;localStorage.setItem('sparkCompany',S.companyName);scheduleSave()});
