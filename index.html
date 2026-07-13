@@ -389,11 +389,11 @@ input,textarea,select{font:inherit}
 .undo-redo button.can:active{color:var(--spark)}
 
 /* ===================== ONBOARDING ===================== */
-.onboard-overlay{position:fixed;inset:0;z-index:200;background:rgba(17,24,39,0.5);backdrop-filter:blur(3.5px);-webkit-backdrop-filter:blur(3.5px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn 0.4s ease;pointer-events:none}
-.onboard-card{background:var(--surface);border-radius:var(--radius-xl);padding:32px 24px;max-width:360px;width:100%;text-align:center;animation:slideUp 0.4s ease;box-shadow:var(--shadow-xl);pointer-events:auto}
+.onboard-overlay{position:fixed;inset:0;z-index:200;background:rgba(17,24,39,0.5);backdrop-filter:blur(3.5px);-webkit-backdrop-filter:blur(3.5px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn 0.4s ease;pointer-events:none;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+.onboard-card{background:var(--surface);border-radius:var(--radius-xl);padding:32px 24px;max-width:360px;width:100%;text-align:center;animation:slideUp 0.4s ease;box-shadow:var(--shadow-xl);pointer-events:auto;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
 .onboard-emoji{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:rgba(232,98,28,0.08);border:2.5px solid rgba(232,98,28,0.15);color:var(--spark);margin-bottom:16px}
-.onboard-title{font-size:20px;font-weight:800;margin-bottom:8px;color:var(--text)}
-.onboard-desc{font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:24px}
+.onboard-title{font-size:20px;font-weight:800;margin-bottom:8px;color:var(--text);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+.onboard-desc{font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:24px;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
 .onboard-dots{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
 .onboard-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.3s}
 .onboard-dot.active{background:var(--spark);width:24px;border-radius:4px}
@@ -1826,9 +1826,9 @@ function renderOnboardStep(){
   }else if(onboardStep===8){
     S.showSummary=false;
     render();
-    openPanel();
+    closePanel();
     setTimeout(()=>{
-      document.getElementById('side-panel')?.classList.add('tour-highlight');
+      document.querySelector('[data-action="open-panel"]')?.classList.add('tour-highlight');
     },50);
   }else if(onboardStep===9){
     S.showSummary=false;
@@ -1931,7 +1931,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v29';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v30';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
