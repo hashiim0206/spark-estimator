@@ -24,7 +24,7 @@ The following client-side libraries are loaded via CDN:
 - **Tailwind CSS (v3)**: Used for responsive, mobile-first utility classes.
 - **xlsx-js-style**: To generate and style Excel spreadsheets locally.
 - **JSZip**: To compress the generated Excel file and walkthrough photos into a single download.
-- **ReportLab (Python)**: Used locally to compile the technical project writeup PDF.
+- **python-docx (Python)**: Used locally to compile the technical project writeup Word document.
 
 ## How to Run Locally
 
@@ -40,6 +40,6 @@ Since this app is a single self-contained file with zero external runtime depend
 
 ```
 ├── index.html       # Single-file PWA (HTML, CSS, JS)
-├── writeup.pdf      # One-page technical writeup
+├── writeup.docx     # One-page technical writeup (Word Document)
 ├── README.md        # This file
 ```
