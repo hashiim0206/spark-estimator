@@ -563,6 +563,11 @@ input,textarea,select{font:inherit}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Pricing CSV
         </button>
       </div>
+      <div id="reset-pricing-group" class="panel-input-group" style="margin-top:8px;display:none">
+        <button id="reset-global-prices-btn" class="panel-tool-btn" style="width:100%;justify-content:center;color:var(--red);background:rgba(239,68,68,0.05)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Reset to Default Prices
+        </button>
+      </div>
       <div class="panel-input-group" style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:12px">
         <button id="clear-all-btn" class="panel-tool-btn" style="color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Clear Estimate Checklist
@@ -949,6 +954,7 @@ async function confirmPriceOverride() {
   }
   saveCurrentState();
   render();
+  updateResetPricingButtonVisibility();
   closePriceOverrideModal();
   showToast('Price override saved');
 }
@@ -960,6 +966,7 @@ async function resetPriceOverride() {
   await dbSaveGlobalPrices(S.globalPriceOverrides);
   saveCurrentState();
   render();
+  updateResetPricingButtonVisibility();
   closePriceOverrideModal();
   showToast('Price reset to default');
 }
@@ -969,7 +976,13 @@ function closePresetModal(){document.getElementById('preset-modal').classList.re
 // ============================================================
 // PANEL
 // ============================================================
-async function openPanel(){await refreshPanelList();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
+function updateResetPricingButtonVisibility(){
+  const hasProj=Object.keys(S.projectPriceOverrides||{}).length>0;
+  const hasGlob=Object.keys(S.globalPriceOverrides||{}).length>0;
+  const btnGroup=document.getElementById('reset-pricing-group');
+  if(btnGroup)btnGroup.style.display=(hasProj||hasGlob)?'block':'none';
+}
+async function openPanel(){await refreshPanelList();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
 function closePanel(){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open')}
 async function refreshPanelList(){const list=await dbGetProjects();const el=document.getElementById('panel-list');if(!list.length){el.innerHTML='<p class="panel-empty">No saved projects</p>';return}el.innerHTML=list.map(p=>{const a=p.id===S.currentProjectId;const safe=(p.name||'').replace(/"/g,'&quot;');return`<div class="panel-project ${a?'active':''}"><button class="panel-project-btn" data-action="load-project" data-pid="${p.id}"><div class="panel-project-name">${p.name}</div><div class="panel-project-date">${fmtDate(p.savedAt)}</div>${a?'<div class="panel-project-active">Active</div>':''}</button><div class="panel-project-actions"><button class="panel-action-btn" data-action="rename-project-panel" data-pid="${p.id}" data-pname="${safe}">${I.pen}</button>${!a?`<button class="panel-action-btn delete" data-action="delete-project" data-pid="${p.id}" data-pname="${safe}">${I.del}</button>`:''}</div></div>`}).join('')}
 
@@ -1252,6 +1265,18 @@ document.getElementById('pom-reset').addEventListener('click',resetPriceOverride
 document.getElementById('price-override-bg').addEventListener('click',closePriceOverrideModal);
 document.getElementById('pom-cost-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPriceOverride();if(e.key==='Escape')closePriceOverrideModal()});
 
+document.getElementById('reset-global-prices-btn').addEventListener('click', async () => {
+  if (!confirm('Are you sure you want to clear all custom price overrides and restore default CSV pricing?')) return;
+  pushUndo();
+  S.projectPriceOverrides = {};
+  S.globalPriceOverrides = {};
+  await dbSaveGlobalPrices({});
+  saveCurrentState();
+  render();
+  updateResetPricingButtonVisibility();
+  showToast('All prices reset to defaults');
+});
+
 document.getElementById('upload-csv-btn').addEventListener('click', () => {
   const input = document.createElement('input');
   input.type = 'file';
@@ -1283,6 +1308,7 @@ document.getElementById('upload-csv-btn').addEventListener('click', () => {
         await dbSaveGlobalPrices(S.globalPriceOverrides);
         saveCurrentState();
         render();
+        updateResetPricingButtonVisibility();
         closePanel();
         showToast('Pricing updated globally from CSV');
       } catch (err) {
@@ -1613,7 +1639,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v17';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v19';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
