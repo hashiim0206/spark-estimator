@@ -1403,7 +1403,8 @@ function shareEmail(){
     }
   });
   text+=`\nTOTAL ESTIMATED BUDGET: ${fmt(total)}\n\n`;
-  text+=`To download the official styled Excel spreadsheet and inspect the report, please open this project inside the Spark Estimator app at https://spark-estimator-kappa.vercel.app/\n\n`;
+  text+=`Spark Estimator App: https://spark-estimator-kappa.vercel.app/\n\n`;
+  text+=`To download the official styled Excel spreadsheet and inspect the report, please open this project inside the app at the link above.\n\n`;
   text+=`Best regards,\n\n`;
   text+=`${S.estimatorName || 'Spark Estimator'}\n`;
   if(S.companyName) text+=`${S.companyName}\n`;
@@ -1724,7 +1725,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v22';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v23';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
