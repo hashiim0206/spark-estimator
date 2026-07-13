@@ -1354,18 +1354,16 @@ function shareEmail(){
   const propDetails=[pr.type==='single'?'Single Family':pr.type==='multi'?'Multi-Family':pr.type==='town'?'Townhome':pr.type==='condo'?'Condo':'',pr.beds?pr.beds+' Bed':'',pr.baths?pr.baths+' Bath':'',pr.sqft?pr.sqft+' sqft':'',pr.yearBuilt?'Built '+pr.yearBuilt:''].filter(Boolean).join(' · ');
   
   let text=`Dear Client,\n\nPlease find below the detailed repair cost estimate for the property walkthrough at ${S.currentProjectName}.\n\n`;
-  text+=`PROPERTY DETAILS\n`;
-  text+=`• Type: ${pr.type ? (pr.type==='single'?'Single Family':pr.type==='multi'?'Multi-Family':pr.type==='town'?'Townhome':'Condo') : 'N/A'}\n`;
-  text+=`• Profile: ${propDetails || 'N/A'}\n\n`;
+  text+=`PROPERTY PROFILE\n`;
+  text+=`Type: ${pr.type ? (pr.type==='single'?'Single Family':pr.type==='multi'?'Multi-Family':pr.type==='town'?'Townhome':'Condo') : 'N/A'}\n`;
+  text+=`Profile: ${propDetails || 'N/A'}\n\n`;
   
   text+=`ESTIMATE SUMMARY\n`;
-  text+=`• Total Estimated Budget: ${fmt(total)}\n`;
-  if(S.estimatorName) text+=`• Prepared By: ${S.estimatorName}\n`;
-  if(S.companyName) text+=`• Company: ${S.companyName}\n`;
-  if(S.estimatorEmail || S.estimatorPhone) text+=`• Contact: ${[S.estimatorPhone, S.estimatorEmail].filter(Boolean).join(' · ')}\n`;
-  text+=`\n--------------------------------------------------\n`;
-  text+=`RENOVATION BREAKDOWN\n`;
-  text+=`--------------------------------------------------\n`;
+  text+=`Total Estimated Budget: ${fmt(total)}\n`;
+  if(S.estimatorName) text+=`Prepared By: ${S.estimatorName}\n`;
+  if(S.companyName) text+=`Company: ${S.companyName}\n`;
+  if(S.estimatorEmail || S.estimatorPhone) text+=`Contact: ${[S.estimatorPhone, S.estimatorEmail].filter(Boolean).join(' · ')}\n`;
+  text+=`\nITEMIZED ESTIMATE BREAKDOWN\n`;
   
   CATEGORIES.forEach(cat=>{
     if(cat.multiRoom){
@@ -1375,16 +1373,16 @@ function shareEmail(){
           return s?.checked&&parseFloat(s.qty)>0;
         });
         if(!rows.length)return;
-        text+=`\n[${inst.name.toUpperCase()}]\n`;
+        text+=`\n${inst.name}\n`;
         rows.forEach(it=>{
           const s=S.items[`${inst.id}:${it.id}`];
           const t=calcItem(it,s);
           const cost=getItemCost(it);
           const minApplied=s&&s.checked&&s.qty&&(parseFloat(s.qty)*cost<t);
           const minNote=minApplied?' (min. applied)':'';
-          text+=`• ${it.name}${minNote}: ${s.qty} ${it.unit} @ $${cost.toFixed(2)}/${it.unit} = ${fmt(t)}\n`;
+          text+=`- ${it.name}${minNote}: ${s.qty} ${it.unit} @ $${cost.toFixed(2)}/${it.unit} = ${fmt(t)}\n`;
         });
-        text+=`*Subtotal*: ${fmt(calcRoomTotal(cat,inst))}\n`;
+        text+=`Subtotal: ${fmt(calcRoomTotal(cat,inst))}\n`;
       });
     }else{
       const rows=cat.items.filter(it=>{
@@ -1392,23 +1390,21 @@ function shareEmail(){
         return s?.checked&&parseFloat(s.qty)>0;
       });
       if(!rows.length)return;
-      text+=`\n[${cat.name.toUpperCase()}]\n`;
+      text+=`\n${cat.name}\n`;
       rows.forEach(it=>{
         const s=S.items[it.id];
         const t=calcItem(it,s);
         const cost=getItemCost(it);
         const minApplied=s&&s.checked&&s.qty&&(parseFloat(s.qty)*cost<t);
         const minNote=minApplied?' (min. applied)':'';
-        text+=`• ${it.name}${minNote}: ${s.qty} ${it.unit} @ $${cost.toFixed(2)}/${it.unit} = ${fmt(t)}\n`;
+        text+=`- ${it.name}${minNote}: ${s.qty} ${it.unit} @ $${cost.toFixed(2)}/${it.unit} = ${fmt(t)}\n`;
       });
-      text+=`*Subtotal*: ${fmt(calcCatTotal(cat))}\n`;
+      text+=`Subtotal: ${fmt(calcCatTotal(cat))}\n`;
     }
   });
-  text+=`\n--------------------------------------------------\n`;
-  text+=`TOTAL INVESTMENT: ${fmt(total)}\n`;
-  text+=`--------------------------------------------------\n\n`;
-  text+=`*To download the official styled Excel spreadsheet and view walkthrough inspection photos, please open this project inside the Spark Estimator app.*\n\n`;
-  text+=`Best regards,\n`;
+  text+=`\nTOTAL ESTIMATED BUDGET: ${fmt(total)}\n\n`;
+  text+=`To download the official styled Excel spreadsheet and inspect the report, please open this project inside the Spark Estimator app at https://spark-estimator-kappa.vercel.app/\n\n`;
+  text+=`Best regards,\n\n`;
   text+=`${S.estimatorName || 'Spark Estimator'}\n`;
   if(S.companyName) text+=`${S.companyName}\n`;
   
@@ -1420,7 +1416,7 @@ async function shareEstimate(){
   const pr=S.property;
   const propDetails=[pr.beds?pr.beds+'bd':'',pr.baths?pr.baths+'ba':'',pr.sqft?pr.sqft+'sf':''].filter(Boolean).join('/');
   
-  let text=`🏠 Spark Estimator Walkthrough Summary\n\n`;
+  let text=`Spark Estimator Walkthrough Summary:\n\n`;
   text+=`Property: ${S.currentProjectName}${propDetails?' ('+propDetails+')':''}\n`;
   text+=`Total Renovation Budget: ${fmt(total)}\n\n`;
   text+=`Breakdown:\n`;
@@ -1430,18 +1426,18 @@ async function shareEstimate(){
       (S.rooms[cat.id]?.instances||[]).forEach(inst=>{
         const sub=calcRoomTotal(cat,inst);
         if(sub>0){
-          text+=`• ${inst.name}: ${fmt(sub)}\n`;
+          text+=`- ${inst.name}: ${fmt(sub)}\n`;
         }
       });
     }else{
       const sub=calcCatTotal(cat);
       if(sub>0){
-        text+=`• ${cat.name}: ${fmt(sub)}\n`;
+        text+=`- ${cat.name}: ${fmt(sub)}\n`;
       }
     }
   });
   
-  text+=`\n📲 View full breakdown, print PDF reports, or export Excel sheets and photos by opening this project in your Spark Estimator app.`;
+  text+=`\nOpen this project at https://spark-estimator-kappa.vercel.app/ to download the Excel report.`;
   
   if(navigator.share){try{await navigator.share({title:`Estimate: ${S.currentProjectName}`,text});showToast('Shared successfully')}catch(e){if(e.name!=='AbortError')fallbackCopy(text)}}else{fallbackCopy(text)}}
 function fallbackCopy(text){navigator.clipboard?.writeText(text).then(()=>showToast('Copied to clipboard')).catch(()=>showToast('Could not share'))}
@@ -1728,7 +1724,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v21';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v22';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
