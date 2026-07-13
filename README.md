@@ -1,8 +1,8 @@
-# Spark Homes Repair Cost Estimator
+# SparkGroup Repair Cost Estimator
 
 A mobile-first, offline-capable Progressive Web App (PWA) built for real estate acquisition agents to walk through properties, estimate renovation costs in the field, and evaluate deal profitability.
 
-This project was built from scratch as part of the Spark Homes Developer Contest.
+This project was built from scratch as part of the SparkGroup Developer Contest.
 
 ## Key Features
 
