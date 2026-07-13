@@ -117,7 +117,7 @@ input,textarea,select{font:inherit}
 .room-tab-add{flex:none;padding:10px 16px;font-size:13px;font-weight:700;color:var(--spark);white-space:nowrap;border-bottom:2.5px solid transparent}
 
 /* ===================== CONTENT AREA ===================== */
-.content-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:88px}
+.content-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:160px}
 .section-header{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px;position:sticky;top:0;background:linear-gradient(180deg,var(--bg) 60%,transparent 100%);z-index:3}
 .section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted)}
 .section-count{font-size:11px;color:var(--text-muted)}
@@ -1856,7 +1856,12 @@ function renderOnboardStep(){
     render();
   }
 
-  document.getElementById('onboard-overlay').innerHTML=`<div class="onboard-overlay"><div class="onboard-card"><div class="onboard-emoji">${s.icon}</div><div class="onboard-title">${s.title}</div><div class="onboard-desc">${s.desc}</div><div class="onboard-dots">${ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot ${i===onboardStep?'active':''}"></div>`).join('')}</div><button class="onboard-next" id="onboard-next">${last?'Get Started →':'Next'}</button><button class="onboard-skip" id="onboard-skip">${last?'':'Skip tour'}</button></div></div>`;
+  const hasBack = onboardStep > 0;
+  const backBtnHtml = hasBack ? `<button class="onboard-back" id="onboard-back" style="flex:1;padding:14px;border-radius:var(--radius-lg);background:var(--border-light);border:1px solid var(--border);color:var(--text-sec);font-weight:700;font-size:15px;transition:background var(--trans);cursor:pointer">Back</button>` : '';
+  const nextBtnHtml = `<button class="onboard-next" id="onboard-next" style="${hasBack ? 'flex:1' : 'width:100%'};padding:14px;border-radius:var(--radius-lg);background:var(--spark);color:#fff;font-weight:700;font-size:15px;transition:background var(--trans);border:none;cursor:pointer">${last?'Get Started →':'Next'}</button>`;
+  const skipBtnHtml = last ? '' : `<button class="onboard-skip" id="onboard-skip" style="margin-top:12px;font-size:12px;color:var(--text-muted);font-weight:500;cursor:pointer;border:none;background:transparent">Skip tour</button>`;
+
+  document.getElementById('onboard-overlay').innerHTML=`<div class="onboard-overlay"><div class="onboard-card"><div class="onboard-emoji">${s.icon}</div><div class="onboard-title">${s.title}</div><div class="onboard-desc">${s.desc}</div><div class="onboard-dots">${ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot ${i===onboardStep?'active':''}"></div>`).join('')}</div><div style="display:flex;gap:12px;width:100%">${backBtnHtml}${nextBtnHtml}</div>${skipBtnHtml}</div></div>`;
   
   document.getElementById('onboard-next').addEventListener('click',()=>{
     if(last){
@@ -1866,6 +1871,12 @@ function renderOnboardStep(){
       renderOnboardStep();
     }
   });
+  if(hasBack){
+    document.getElementById('onboard-back').addEventListener('click',()=>{
+      onboardStep--;
+      renderOnboardStep();
+    });
+  }
   const skip=document.getElementById('onboard-skip');
   if(skip)skip.addEventListener('click',endOnboarding);
 }
@@ -1920,7 +1931,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v28';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v29';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
