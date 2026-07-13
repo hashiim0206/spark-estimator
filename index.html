@@ -966,10 +966,10 @@ function showToast(msg,dur=2500){const el=document.createElement('div');el.class
 // MODALS
 // ============================================================
 let pendingModal=null;
-function openModal(title,ph,val,cb){document.getElementById('modal-select-wrap').style.display='none';pendingModal=cb;document.getElementById('modal-title').textContent=title;const inp=document.getElementById('modal-input');inp.placeholder=ph||'';inp.value=val||'';document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
-function openRoomModal(catId,cb){const selectWrap=document.getElementById('modal-select-wrap');const select=document.getElementById('modal-select');const title=document.getElementById('modal-title');const inp=document.getElementById('modal-input');title.textContent='Add Room';inp.placeholder='e.g. Master Bedroom';if(catId==='interior'){selectWrap.style.display='block';select.innerHTML=`<option value="Bedroom">Bedroom</option><option value="Living/Common">Living/Common</option><option value="Interior/General">Interior/General</option>`;select.onchange=()=>{const type=select.value;const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type===type).length+1;inp.value=`${type} ${count}`};const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type==='Bedroom').length+1;inp.value=`Bedroom ${count}`}else{selectWrap.style.display='none';const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];inp.value=`${cat.name} ${rd.instances.length+1}`}pendingModal=name=>{const type=catId==='interior'?select.value:CATEGORIES.find(c=>c.id===catId).name;cb({name,type})};document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
+function openModal(title,ph,val,cb){pushModalState('app-modal');document.getElementById('modal-select-wrap').style.display='none';pendingModal=cb;document.getElementById('modal-title').textContent=title;const inp=document.getElementById('modal-input');inp.placeholder=ph||'';inp.value=val||'';document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
+function openRoomModal(catId,cb){pushModalState('app-modal');const selectWrap=document.getElementById('modal-select-wrap');const select=document.getElementById('modal-select');const title=document.getElementById('modal-title');const inp=document.getElementById('modal-input');title.textContent='Add Room';inp.placeholder='e.g. Master Bedroom';if(catId==='interior'){selectWrap.style.display='block';select.innerHTML=`<option value="Bedroom">Bedroom</option><option value="Living/Common">Living/Common</option><option value="Interior/General">Interior/General</option>`;select.onchange=()=>{const type=select.value;const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type===type).length+1;inp.value=`${type} ${count}`};const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type==='Bedroom').length+1;inp.value=`Bedroom ${count}`}else{selectWrap.style.display='none';const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];inp.value=`${cat.name} ${rd.instances.length+1}`}pendingModal=name=>{const type=catId==='interior'?select.value:CATEGORIES.find(c=>c.id===catId).name;cb({name,type})};document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function confirmModal(){const v=document.getElementById('modal-input').value.trim();if(v&&pendingModal)pendingModal(v);closeModal()}
-function closeModal(){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null}
+function closeModal(isPopstate){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null;if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('app-modal')}
 let customItemGid = null;
 let customItemRid = null;
 function openCustomItemModal(gid, rid) {
@@ -978,13 +978,16 @@ function openCustomItemModal(gid, rid) {
   document.getElementById('custom-item-name').value = '';
   document.getElementById('custom-item-cost').value = '';
   document.getElementById('custom-item-unit').value = 'ea.';
+  pushModalState('custom-item');
   document.getElementById('custom-item-modal').classList.add('open');
   setTimeout(() => document.getElementById('custom-item-name').focus(), 80);
 }
-function closeCustomItemModal() {
+function closeCustomItemModal(isPopstate) {
   document.getElementById('custom-item-modal').classList.remove('open');
   customItemGid = null;
   customItemRid = null;
+  if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();
+  removeModalState('custom-item');
 }
 function confirmCustomItem() {
   const name = document.getElementById('custom-item-name').value.trim();
@@ -1042,12 +1045,15 @@ function openPriceOverrideModal(itemId) {
   } else {
     document.querySelector('input[name="pom-scope"][value="project"]').checked = true;
   }
+  pushModalState('price-override');
   document.getElementById('price-override-modal').classList.add('open');
   setTimeout(() => document.getElementById('pom-cost-input').focus(), 80);
 }
-function closePriceOverrideModal() {
+function closePriceOverrideModal(isPopstate) {
   document.getElementById('price-override-modal').classList.remove('open');
   overrideItemId = null;
+  if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();
+  removeModalState('price-override');
 }
 async function confirmPriceOverride() {
   if (!overrideItemId) return;
@@ -1084,8 +1090,8 @@ async function resetPriceOverride() {
   closePriceOverrideModal();
   showToast('Price reset to default');
 }
-function openPresetModal(){document.getElementById('preset-modal').classList.add('open')}
-function closePresetModal(){document.getElementById('preset-modal').classList.remove('open')}
+function openPresetModal(){pushModalState('presets');document.getElementById('preset-modal').classList.add('open')}
+function closePresetModal(isPopstate){document.getElementById('preset-modal').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('presets')}
 
 // ============================================================
 // PANEL
@@ -1096,15 +1102,15 @@ function updateResetPricingButtonVisibility(){
   const btnGroup=document.getElementById('reset-pricing-group');
   if(btnGroup)btnGroup.style.display=(hasProj||hasGlob)?'block':'none';
 }
-async function openPanel(){await refreshPanelList();applySidebarSectionsState();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
-function closePanel(){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open')}
+async function openPanel(){await refreshPanelList();applySidebarSectionsState();pushModalState('panel');lockBodyScroll();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
+function closePanel(isPopstate){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open');unlockBodyScroll();if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('panel')}
 async function refreshPanelList(){const list=await dbGetProjects();const el=document.getElementById('panel-list');if(!list.length){el.innerHTML='<p class="panel-empty">No saved projects</p>';return}el.innerHTML=list.map(p=>{const a=p.id===S.currentProjectId;const safe=(p.name||'').replace(/"/g,'&quot;');return`<div class="panel-project ${a?'active':''}"><button class="panel-project-btn" data-action="load-project" data-pid="${p.id}"><div class="panel-project-name">${p.name}</div><div class="panel-project-date">${fmtDate(p.savedAt)}</div>${a?'<div class="panel-project-active">Active</div>':''}</button><div class="panel-project-actions"><button class="panel-action-btn" data-action="rename-project-panel" data-pid="${p.id}" data-pname="${safe}">${I.pen}</button>${!a?`<button class="panel-action-btn delete" data-action="delete-project" data-pid="${p.id}" data-pname="${safe}">${I.del}</button>`:''}</div></div>`}).join('')}
 
 // ============================================================
 // SEARCH ENGINE
 // ============================================================
-function openSearch(){document.getElementById('search-overlay').classList.add('open');const inp=document.getElementById('search-input');inp.value='';inp.focus();renderSearchResults('')}
-function closeSearch(){document.getElementById('search-overlay').classList.remove('open')}
+function openSearch(){pushModalState('search');document.getElementById('search-overlay').classList.add('open');const inp=document.getElementById('search-input');inp.value='';inp.focus();renderSearchResults('')}
+function closeSearch(isPopstate){document.getElementById('search-overlay').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('search')}
 function performSearch(q){if(!q.trim())return[];const lq=q.trim().toLowerCase();const results=[];CATEGORIES.forEach((cat,ci)=>{const matches=[];cat.items.forEach(it=>{if(it.noAction)return;const nameLower=it.name.toLowerCase();const words=nameLower.split(/[^a-z0-9]+/);const match=nameLower.startsWith(lq)||words.some(w=>w.startsWith(lq))||(lq.includes(' ')&&nameLower.includes(lq));if(match){const sid=cat.multiRoom?`${(S.rooms[cat.id]?.instances[S.rooms[cat.id]?.current||0])?.id||''}:${it.id}`:it.id;matches.push({item:it,catIndex:ci,stateId:sid,checked:S.items[sid]?.checked})}});if(matches.length)results.push({catName:cat.name,color:CAT_COLORS[ci],matches})});return results}
 function renderSearchResults(q){const el=document.getElementById('search-results');if(!q.trim()){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">🔍</div><p style="font-size:15px;font-weight:600">Search all repair items</p><p style="font-size:12px;margin-top:4px">Type to filter across all ${CATEGORIES.flatMap(c=>c.items).filter(i=>!i.noAction).length} items</p></div>`;return}const groups=performSearch(q);if(!groups.length){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">😕</div><p style="font-size:15px;font-weight:600">No results for "${q}"</p></div>`;return}el.innerHTML=groups.map(g=>`<div class="search-cat-label" style="color:${g.color}">${g.catName}</div>${g.matches.map(m=>`<button class="search-result-item" data-action="search-go" data-cat="${m.catIndex}" data-sid="${m.stateId}"><div><div class="search-result-name">${highlightMatch(m.item.name,q)}</div><div class="search-result-cost">$${getItemCost(m.item).toLocaleString('en-US',{minimumFractionDigits:2})} / ${m.item.unit}</div></div>${m.checked?'<span class="search-result-check">✓ Selected</span>':''}</button>`).join('')}`).join('')}
 function highlightMatch(text,q){const idx=text.toLowerCase().indexOf(q.toLowerCase());if(idx<0)return text;return text.slice(0,idx)+`<mark style="background:rgba(232,98,28,0.2);color:var(--spark-dark);border-radius:2px;padding:0 1px">${text.slice(idx,idx+q.length)}</mark>`+text.slice(idx+q.length)}
@@ -1245,8 +1251,8 @@ const zip=new JSZip();zip.file(`${baseName}.xlsx`,XLSX.write(wb,{bookType:'xlsx'
 // ============================================================
 // DEAL ANALYZER + SVG CHART
 // ============================================================
-function openDealAnalyzer(){renderDealBody();document.getElementById('deal-sheet').classList.add('open')}
-function closeDealAnalyzer(){document.getElementById('deal-sheet').classList.remove('open')}
+function openDealAnalyzer(){pushModalState('deal');renderDealBody();document.getElementById('deal-sheet').classList.add('open')}
+function closeDealAnalyzer(isPopstate){document.getElementById('deal-sheet').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('deal')}
 function calcDeal(){const arv=parseFloat(S.dealAnalyzer.arv)||0;const purchase=parseFloat(S.dealAnalyzer.purchasePrice)||0;const repairs=calcTotal();const closingCosts=arv*(S.dealAnalyzer.closingPct/100);const holdingCosts=S.dealAnalyzer.holdingMonths*S.dealAnalyzer.monthlyHolding;const financing=purchase*(S.dealAnalyzer.financingRate/100)*(S.dealAnalyzer.holdingMonths/12);const contingency=repairs*(S.dealAnalyzer.contingencyPct/100);const totalCosts=repairs+closingCosts+holdingCosts+financing+contingency;const totalInvestment=purchase+totalCosts;const profit=arv-totalInvestment;const roi=totalInvestment>0?(profit/totalInvestment*100):0;const margin=arv>0?(profit/arv*100):0;const rule70=purchase+repairs;const rule70Limit=arv*0.7;const rule70Pass=rule70<=rule70Limit;let verdictText='Walk Away',verdictClass='bad';if(arv>0){if(margin>=20){verdictText='Strong Deal';verdictClass='good'}else if(margin>=10){verdictText='Thin Margins';verdictClass='mid'}}return{arv,purchase,repairs,closingCosts,holdingCosts,financing,contingency,totalCosts,totalInvestment,profit,roi,margin,rule70,rule70Limit,rule70Pass,verdictText,verdictClass}}
 function renderDealOutput(){const r=calcDeal();const C=157.08;const si=r.totalInvestment||1;const pS=(r.purchase/si)*C;const rS=(r.repairs/si)*C;const sS=((r.totalCosts-r.repairs)/si)*C;
 return`${r.arv>0&&r.purchase>0?`<div class="deal-chart-container"><svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)"><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--border-light)" stroke-width="50"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--blue)" stroke-width="50" stroke-dasharray="${pS} ${C}" stroke-dashoffset="0"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--spark)" stroke-width="50" stroke-dasharray="${rS} ${C}" stroke-dashoffset="${-pS}"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--purple)" stroke-width="50" stroke-dasharray="${sS} ${C}" stroke-dashoffset="${-(pS+rS)}"/><circle cx="60" cy="60" r="18" fill="var(--surface)"/><text x="60" y="58" class="deal-chart-text" transform="rotate(90 60 60)">TOTAL BUY-IN</text><text x="60" y="72" transform="rotate(90 60 60)" style="font-size:10px;font-weight:800;fill:var(--text);text-anchor:middle">${fmt(r.totalInvestment)}</text></svg></div><div style="display:flex;justify-content:center;gap:12px;font-size:10px;font-weight:700;margin-bottom:18px"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--blue);border-radius:2px"></span>Purchase</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--spark);border-radius:2px"></span>Repairs</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px"></span>Soft Costs</span></div>`:''}<div class="deal-input-group"><label class="deal-label">Repair Estimate (from walkthrough)</label><div style="padding:10px 12px;background:var(--border-light);border-radius:var(--radius-md);font-size:16px;font-weight:700;color:var(--spark)">${fmt(r.repairs)}</div></div>${r.arv>0&&r.purchase>0?`<div class="deal-results"><div class="deal-result-row"><span class="deal-result-label">Closing Costs</span><span class="deal-result-value">${fmt(r.closingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Holding Costs</span><span class="deal-result-value">${fmt(r.holdingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Financing</span><span class="deal-result-value">${fmt(r.financing)}</span></div><div class="deal-result-row"><span class="deal-result-label">Contingency</span><span class="deal-result-value">${fmt(r.contingency)}</span></div><div class="deal-result-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><span class="deal-result-label" style="font-weight:700">Total Investment</span><span class="deal-result-value" style="font-size:16px">${fmt(r.totalInvestment)}</span></div><div class="deal-result-row"><span class="deal-result-label" style="font-weight:700">Projected Profit</span><span class="deal-result-value" style="font-size:16px;color:${r.profit>=0?'var(--green)':'var(--red)'}">${fmt(r.profit)}</span></div><div class="deal-result-row"><span class="deal-result-label">ROI</span><span class="deal-result-value">${r.roi.toFixed(1)}%</span></div><div class="deal-result-row"><span class="deal-result-label">Profit Margin</span><span class="deal-result-value">${r.margin.toFixed(1)}%</span></div></div><div class="deal-verdict ${r.verdictClass}">${r.verdictText}</div>`:'<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">Enter ARV and Purchase Price to see analysis</div>'}`}
@@ -1653,11 +1659,18 @@ let onboardStep=0;
 // ============================================================
 // SIDEBAR COLLAPSIBLE PANELS & HELPERS
 // ============================================================
-function toggleSidebarSection(sectionId) {
+function toggleSidebarSection(sectionId, isPopstate) {
+  const isPop = isPopstate === true;
   const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
   state[sectionId] = !state[sectionId];
   localStorage.setItem('sparkPanelState', JSON.stringify(state));
   applySidebarSectionsState();
+  if(state[sectionId]) {
+    pushModalState('section-' + sectionId);
+  } else {
+    removeModalState('section-' + sectionId);
+    if(!isPop && typeof history !== 'undefined' && history.back) history.back();
+  }
 }
 
 function applySidebarSectionsState() {
@@ -1732,6 +1745,85 @@ function syncNoActionNeeded(sid, checked) {
     if (checked && S.items[nanSid]) {
       S.items[nanSid].checked = false;
     }
+  }
+}
+
+
+// ============================================================
+// BODY SCROLL LOCKING HELPERS
+// ============================================================
+let bodyScrollOffset = 0;
+function lockBodyScroll() {
+  if (typeof document === 'undefined' || !document.body || !document.body.style) return;
+  bodyScrollOffset = (typeof window !== 'undefined') ? (window.scrollY || window.pageYOffset) : 0;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${bodyScrollOffset}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.overflow = 'hidden';
+}
+function unlockBodyScroll() {
+  if (typeof document === 'undefined' || !document.body || !document.body.style) return;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.overflow = '';
+  if (typeof window !== 'undefined') window.scrollTo(0, bodyScrollOffset);
+}
+
+// ============================================================
+// MODAL STACK & HISTORY ROUTING (BACK BUTTON)
+// ============================================================
+let openModalsStack = [];
+
+function pushModalState(id) {
+  if (typeof history === 'undefined' || !history.pushState) return;
+  if (!openModalsStack.includes(id)) {
+    openModalsStack.push(id);
+    history.pushState({ modal: id }, '');
+  }
+}
+
+function removeModalState(id) {
+  const index = openModalsStack.indexOf(id);
+  if (index !== -1) {
+    openModalsStack.splice(index, 1);
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', (e) => {
+    if (openModalsStack.length > 0) {
+      const topId = openModalsStack.pop();
+      closeModalById(topId, true);
+    }
+  });
+}
+
+function closeModalById(id, isPopstate) {
+  if (id === 'panel') {
+    closePanel(isPopstate);
+  } else if (id === 'calc') {
+    closeCalc(isPopstate);
+  } else if (id === 'presets') {
+    closePresetModal(isPopstate);
+  } else if (id === 'custom-item') {
+    closeCustomItemModal(isPopstate);
+  } else if (id === 'price-override') {
+    closePriceOverrideModal(isPopstate);
+  } else if (id === 'deal') {
+    closeDealAnalyzer(isPopstate);
+  } else if (id === 'search') {
+    closeSearch(isPopstate);
+  } else if (id === 'app-modal') {
+    closeModal(isPopstate);
+  } else if (id.startsWith('section-')) {
+    const sectionId = id.substring(8);
+    const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
+    state[sectionId] = false;
+    localStorage.setItem('sparkPanelState', JSON.stringify(state));
+    applySidebarSectionsState();
   }
 }
 
@@ -1884,8 +1976,8 @@ function renderOnboardStep(){
 // QUICK CALCULATOR
 // ============================================================
 let calcExpr='';
-function openCalc(){document.getElementById('calc-overlay').classList.add('open');calcExpr='';updateCalcDisplay()}
-function closeCalc(){document.getElementById('calc-overlay').classList.remove('open')}
+function openCalc(){pushModalState('calc');document.getElementById('calc-overlay').classList.add('open');calcExpr='';updateCalcDisplay()}
+function closeCalc(isPopstate){document.getElementById('calc-overlay').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('calc')}
 function updateCalcDisplay(){document.getElementById('calc-expr').textContent=calcExpr||'';let result='0';if(calcExpr){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))result=parseFloat(val.toFixed(4)).toLocaleString('en-US')}catch{}}document.getElementById('calc-result').textContent=result}
 function handleCalcBtn(v){if(v==='C'){calcExpr=''}else if(v==='='){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))calcExpr=String(parseFloat(val.toFixed(4)))}catch{}}else{calcExpr+=v}updateCalcDisplay()}
 document.getElementById('calc-overlay').addEventListener('click',e=>{const btn=e.target.closest('[data-calc]');if(btn)handleCalcBtn(btn.dataset.calc)});
@@ -1931,14 +2023,34 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v30';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v31';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
 // ============================================================
 (async function(){const theme=localStorage.getItem('sparkTheme');if(theme==='dark'||(!theme&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');
 S.globalPriceOverrides=await dbGetGlobalPrices();const list=await dbGetProjects();if(list.length>0)loadProjectIntoState(list[0]);else{S.currentProjectId=`proj_${Date.now()}`;S.currentProjectName='New Estimate';initItems();await saveCurrentState()}render();applySidebarSectionsState();showOnboarding();
-window.addEventListener('visibilitychange',()=>{if(document.hidden)saveCurrentState()});
+window.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    saveCurrentState();
+    sessionStorage.setItem('sparkPanelResetAccordion', 'true');
+  } else {
+    if (sessionStorage.getItem('sparkPanelResetAccordion') === 'true') {
+      sessionStorage.removeItem('sparkPanelResetAccordion');
+      const defaults = {
+        profile: false,
+        projects: true,
+        tools: true,
+        export: true,
+        pricing: true,
+        preferences: true,
+        help: true
+      };
+      localStorage.setItem('sparkPanelState', JSON.stringify(defaults));
+      applySidebarSectionsState();
+    }
+  }
+});
 window.addEventListener('pagehide',saveCurrentState);
 window.addEventListener('freeze',saveCurrentState)})();
 </script>
