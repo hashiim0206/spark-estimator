@@ -291,7 +291,7 @@ input,textarea,select{font:inherit}
 .sheet-body{overflow-y:auto;flex:1;padding:20px}
 
 /* ===================== DEAL ANALYZER ===================== */
-.deal-fab{position:fixed;bottom:80px;right:16px;z-index:15;background:linear-gradient(135deg,var(--header-bg) 0%,var(--header-bg2) 100%);color:#fff;padding:12px 18px;border-radius:var(--radius-full);font-size:13px;font-weight:700;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:6px;transition:transform var(--trans),box-shadow var(--trans)}
+.deal-fab{position:fixed;bottom:96px;right:16px;z-index:15;background:linear-gradient(135deg,var(--header-bg) 0%,var(--header-bg2) 100%);color:#fff;padding:12px 18px;border-radius:var(--radius-full);font-size:13px;font-weight:700;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:6px;transition:transform var(--trans),box-shadow var(--trans)}
 .deal-fab:active{transform:scale(0.95)}
 .deal-input-group{margin-bottom:14px}
 .deal-label{font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:4px;display:block}
@@ -468,6 +468,47 @@ input,textarea,select{font:inherit}
     opacity: 0.8;
   }
 }
+
+/* ===================== SIDEBAR ACCORDION ===================== */
+.panel-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.panel-section-header:active {
+  opacity: 0.7;
+}
+.panel-section-title {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-sec);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 !important;
+}
+.panel-section-chevron {
+  transition: transform var(--trans);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+.panel-section-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+.panel-section-content {
+  transition: max-height var(--trans) ease;
+}
+.panel-section-content.collapsed {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -487,93 +528,166 @@ input,textarea,select{font:inherit}
     <button id="panel-close" class="panel-close">✕</button>
   </div>
   <div class="panel-list">
-    <!-- 1. Branding Personalization -->
-    <div class="panel-section">
-      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Branding & Info</div>
-      <div class="panel-input-group">
-        <label class="panel-input-label">Company Name</label>
-        <input type="text" id="brand-company" class="panel-input" placeholder="Enter Company Name" />
+    
+    <!-- 1. Report Profile -->
+    <div class="panel-section" id="section-profile">
+      <div class="panel-section-header" onclick="toggleSidebarSection('profile')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          Report Profile
+        </div>
+        <span class="panel-section-chevron" id="chevron-profile"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </div>
-      <div class="panel-input-group">
-        <label class="panel-input-label">Estimator Name</label>
-        <input type="text" id="brand-estimator" class="panel-input" placeholder="Enter Full Name" />
-      </div>
-      <div class="panel-input-group">
-        <label class="panel-input-label">Email Address</label>
-        <input type="email" id="brand-email" class="panel-input" placeholder="Enter Email Address" />
-      </div>
-      <div class="panel-input-group">
-        <label class="panel-input-label">Phone Number</label>
-        <input type="tel" id="brand-phone" class="panel-input" placeholder="Enter Phone Number" />
-      </div>
-    </div>
-
-    <!-- 2. Saved Projects -->
-    <div class="panel-section">
-      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Saved Projects</div>
-      <div id="panel-list" class="panel-list-inner"></div>
-    </div>
-
-    <!-- 3. Walkthrough Tools -->
-    <div class="panel-section">
-      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>Walkthrough Tools</div>
-      <div class="panel-action-row">
-        <button class="panel-tool-btn" data-action="open-search">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
-        </button>
-        <button class="panel-tool-btn" data-action="open-calc">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="22" x2="16" y2="16"/><rect x="8" y="10" width="2" height="2"/><rect x="14" y="10" width="2" height="2"/><rect x="8" y="14" width="2" height="2"/><rect x="14" y="14" width="2" height="2"/><rect x="8" y="18" width="2" height="2"/><rect x="14" y="18" width="2" height="2"/></svg>Quick Calculator
-        </button>
-        <button class="panel-tool-btn" data-action="open-presets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Renovation Presets
-        </button>
+      <div class="panel-section-content" id="content-profile">
+        <div class="panel-input-group" style="margin-top:10px">
+          <label class="panel-input-label">Company Name</label>
+          <input type="text" id="brand-company" class="panel-input" placeholder="Enter Company Name" />
+        </div>
+        <div class="panel-input-group">
+          <label class="panel-input-label">Estimator Name</label>
+          <input type="text" id="brand-estimator" class="panel-input" placeholder="Enter Full Name" />
+        </div>
+        <div class="panel-input-group">
+          <label class="panel-input-label">Email Address</label>
+          <input type="email" id="brand-email" class="panel-input" placeholder="Enter Email Address" />
+        </div>
+        <div class="panel-input-group">
+          <label class="panel-input-label">Phone Number</label>
+          <input type="tel" id="brand-phone" class="panel-input" placeholder="Enter Phone Number" />
+        </div>
       </div>
     </div>
 
-    <!-- 4. Export -->
-    <div class="panel-section">
-      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Export</div>
-      <div class="panel-action-row">
-        <button class="panel-tool-btn" data-action="export" style="background:rgba(232,98,28,0.08);color:var(--spark)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Export Excel
-        </button>
-        <button class="panel-tool-btn" data-action="print-pdf">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Generate PDF Report
-        </button>
+    <!-- 2. Your Projects -->
+    <div class="panel-section" id="section-projects">
+      <div class="panel-section-header" onclick="toggleSidebarSection('projects')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+          Your Projects
+        </div>
+        <span class="panel-section-chevron" id="chevron-projects"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="panel-section-content" id="content-projects">
+        <div id="panel-list" class="panel-list-inner" style="margin-top:10px"></div>
       </div>
     </div>
 
-    <!-- 5. App Settings -->
-    <div class="panel-section" style="border-bottom:none">
-      <div class="panel-section-title"><span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>App Settings</div>
-      <div class="panel-input-group">
-        <label class="panel-input-label">App Theme</label>
-        <div style="display:flex;gap:8px">
-          <button id="theme-light-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
+    <!-- 3. Tools -->
+    <div class="panel-section" id="section-tools">
+      <div class="panel-section-header" onclick="toggleSidebarSection('tools')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+          Tools
+        </div>
+        <span class="panel-section-chevron" id="chevron-tools"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="panel-section-content" id="content-tools">
+        <div class="panel-action-row" style="margin-top:10px">
+          <button class="panel-tool-btn" data-action="open-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
           </button>
-          <button id="theme-dark-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
+          <button class="panel-tool-btn" data-action="open-calc">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="22" x2="16" y2="16"/><rect x="8" y="10" width="2" height="2"/><rect x="14" y="10" width="2" height="2"/><rect x="8" y="14" width="2" height="2"/><rect x="14" y="14" width="2" height="2"/><rect x="8" y="18" width="2" height="2"/><rect x="14" y="18" width="2" height="2"/></svg>Calculator
+          </button>
+          <button class="panel-tool-btn" data-action="open-presets">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Presets
           </button>
         </div>
       </div>
-      <div class="panel-input-group" style="margin-top:12px">
-        <label class="panel-input-label">Update Prices globally</label>
-        <button id="upload-csv-btn" class="panel-tool-btn" style="width:100%;justify-content:center">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Pricing CSV
-        </button>
+    </div>
+
+    <!-- 4. Export & Reports -->
+    <div class="panel-section" id="section-export">
+      <div class="panel-section-header" onclick="toggleSidebarSection('export')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          Export & Reports
+        </div>
+        <span class="panel-section-chevron" id="chevron-export"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </div>
-      <div id="reset-pricing-group" class="panel-input-group" style="margin-top:8px;display:none">
-        <button id="reset-global-prices-btn" class="panel-tool-btn" style="width:100%;justify-content:center;color:var(--red);background:rgba(239,68,68,0.05)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Reset to Default Prices
-        </button>
-      </div>
-      <div class="panel-input-group" style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:12px">
-        <button id="clear-all-btn" class="panel-tool-btn" style="color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Clear Estimate Checklist
-        </button>
+      <div class="panel-section-content" id="content-export">
+        <div class="panel-action-row" style="margin-top:10px">
+          <button class="panel-tool-btn" data-action="export" style="background:rgba(232,98,28,0.08);color:var(--spark)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Export Excel
+          </button>
+          <button class="panel-tool-btn" data-action="print-pdf">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Generate PDF
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- 5. Pricing -->
+    <div class="panel-section" id="section-pricing">
+      <div class="panel-section-header" onclick="toggleSidebarSection('pricing')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          Pricing
+        </div>
+        <span class="panel-section-chevron" id="chevron-pricing"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="panel-section-content" id="content-pricing">
+        <div class="panel-input-group" style="margin-top:10px">
+          <label class="panel-input-label">Update Prices globally</label>
+          <button id="upload-csv-btn" class="panel-tool-btn" style="width:100%;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Pricing CSV
+          </button>
+        </div>
+        <div id="reset-pricing-group" class="panel-input-group" style="margin-top:8px;display:none">
+          <button id="reset-global-prices-btn" class="panel-tool-btn" style="width:100%;justify-content:center;color:var(--red);background:rgba(239,68,68,0.05)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Reset to Default Prices
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Preferences -->
+    <div class="panel-section" id="section-preferences">
+      <div class="panel-section-header" onclick="toggleSidebarSection('preferences')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+          Preferences
+        </div>
+        <span class="panel-section-chevron" id="chevron-preferences"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="panel-section-content" id="content-preferences">
+        <div class="panel-input-group" style="margin-top:10px">
+          <label class="panel-input-label">App Theme</label>
+          <div style="display:flex;gap:8px">
+            <button id="theme-light-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
+            </button>
+            <button id="theme-dark-btn" class="panel-tool-btn" style="flex:1;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
+            </button>
+          </div>
+        </div>
+        <div class="panel-input-group" style="margin-top:12px">
+          <button id="clear-all-btn" class="panel-tool-btn" style="width:100%;color:var(--red);background:rgba(239,68,68,0.05);justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Clear Checklist
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Help -->
+    <div class="panel-section" id="section-help" style="border-bottom:none">
+      <div class="panel-section-header" onclick="toggleSidebarSection('help')">
+        <div class="panel-section-title">
+          <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+          Help
+        </div>
+        <span class="panel-section-chevron" id="chevron-help"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="panel-section-content" id="content-help">
+        <div class="panel-input-group" style="margin-top:10px">
+          <button class="panel-tool-btn" data-action="replay-tour" style="width:100%;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Replay Tour
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div class="panel-footer pb-safe">
     <button id="panel-new-btn" class="panel-new-btn">+ New Project</button>
@@ -982,7 +1096,7 @@ function updateResetPricingButtonVisibility(){
   const btnGroup=document.getElementById('reset-pricing-group');
   if(btnGroup)btnGroup.style.display=(hasProj||hasGlob)?'block':'none';
 }
-async function openPanel(){await refreshPanelList();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
+async function openPanel(){await refreshPanelList();applySidebarSectionsState();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
 function closePanel(){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open')}
 async function refreshPanelList(){const list=await dbGetProjects();const el=document.getElementById('panel-list');if(!list.length){el.innerHTML='<p class="panel-empty">No saved projects</p>';return}el.innerHTML=list.map(p=>{const a=p.id===S.currentProjectId;const safe=(p.name||'').replace(/"/g,'&quot;');return`<div class="panel-project ${a?'active':''}"><button class="panel-project-btn" data-action="load-project" data-pid="${p.id}"><div class="panel-project-name">${p.name}</div><div class="panel-project-date">${fmtDate(p.savedAt)}</div>${a?'<div class="panel-project-active">Active</div>':''}</button><div class="panel-project-actions"><button class="panel-action-btn" data-action="rename-project-panel" data-pid="${p.id}" data-pname="${safe}">${I.pen}</button>${!a?`<button class="panel-action-btn delete" data-action="delete-project" data-pid="${p.id}" data-pname="${safe}">${I.del}</button>`:''}</div></div>`}).join('')}
 
@@ -1144,12 +1258,84 @@ document.getElementById('deal-body').innerHTML=`<div id="deal-output">${renderDe
 // REHAB PRESETS
 // ============================================================
 function applyRehabPreset(type,sqft){pushUndo();initItems();
-if(type==='cosmetic'){Object.assign(S.items,{'ig-05':{checked:true,qty:Math.round(sqft*0.7)+'',year:'',notes:'Vinyl plank'},'ig-06':{checked:true,qty:Math.round(sqft*0.3)+'',year:'',notes:'Carpet bedrooms'},'ig-07':{checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'2-coat paint'},'ig-19':{checked:true,qty:Math.round(sqft*0.15)+'',year:'',notes:'Baseboards'},'ig-20':{checked:true,qty:'1',year:'',notes:'Punch list'},'ig-22':{checked:true,qty:Math.round(sqft/100)+'',year:'',notes:'Light fixtures'},'ig-27':{checked:true,qty:'1',year:'',notes:'Final cleaning'}})}
-else if(type==='average'){Object.assign(S.items,{'ig-05':{checked:true,qty:Math.round(sqft*0.7)+'',year:'',notes:'Vinyl plank'},'ig-06':{checked:true,qty:Math.round(sqft*0.3)+'',year:'',notes:'Carpet'},'ig-07':{checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'Paint'},'ig-19':{checked:true,qty:Math.round(sqft*0.15)+'',year:'',notes:'Baseboards'},'ig-20':{checked:true,qty:'1',year:'',notes:'Punch list'},'ig-22':{checked:true,qty:Math.round(sqft/100)+'',year:'',notes:'Light fixtures'},'ig-27':{checked:true,qty:'1',year:'',notes:'Final cleaning'},'k1:kt-05':{checked:true,qty:'1',year:'',notes:'Cabinet paint'},'k1:kt-06':{checked:true,qty:'20',year:'',notes:'Granite'},'k1:kt-07':{checked:true,qty:'1',year:'',notes:'Backsplash'},'k1:kt-11':{checked:true,qty:'1',year:'',notes:'Sink'},'k1:kt-16':{checked:true,qty:'1',year:'',notes:'Dishwasher'},'k1:kt-17':{checked:true,qty:'1',year:'',notes:'Fridge'},'as-02':{checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'AC condenser'},'as-10':{checked:true,qty:'1',year:'',notes:'Switches/outlets'}});S.rooms.bathroom.instances.forEach(b=>{S.items[`${b.id}:ba-03`]={checked:true,qty:'1',year:'',notes:'Vanity'};S.items[`${b.id}:ba-04`]={checked:true,qty:'1',year:'',notes:'Toilet'};S.items[`${b.id}:ba-07`]={checked:true,qty:'1',year:'',notes:'Reglaze'}})}
-else if(type==='gut'){Object.assign(S.items,{'ig-07':{checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'Full paint'},'ig-25':{checked:true,qty:'1',year:'',notes:'Demo'},'ig-26':{checked:true,qty:'3',year:'',notes:'Haul off'},'ig-27':{checked:true,qty:'1',year:'',notes:'Cleaning'},'k1:kt-02':{checked:true,qty:'18',year:'',notes:'Uppers'},'k1:kt-03':{checked:true,qty:'18',year:'',notes:'Lowers'},'k1:kt-06':{checked:true,qty:'24',year:'',notes:'Granite'},'k1:kt-11':{checked:true,qty:'1',year:'',notes:'Sink'},'k1:kt-13':{checked:true,qty:'1',year:'',notes:'Range'},'k1:kt-16':{checked:true,qty:'1',year:'',notes:'Dishwasher'},'k1:kt-17':{checked:true,qty:'1',year:'',notes:'Fridge'},'as-01':{checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'Furnace'},'as-02':{checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'AC'},'as-08':{checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'Water heater'},'as-16':{checked:true,qty:Math.round(sqft*1.25/100)+'',year:'',notes:'Roof'},'as-18':{checked:true,qty:'1',year:'',notes:'200A panel'},'as-19':{checked:true,qty:sqft+'',year:'',notes:'Full rewire'},'as-23':{checked:true,qty:Math.round(sqft*3.5)+'',year:'',notes:'Drywall'},'ex-04':{checked:true,qty:'1',year:'',notes:'Landscaping'},'ex-14':{checked:true,qty:'12',year:'',notes:'Windows'},'ex-18':{checked:true,qty:'120',year:'',notes:'Gutters'}});S.rooms.bathroom.instances.forEach(b=>{S.items[`${b.id}:ba-02`]={checked:true,qty:'4',year:'',notes:'Vanity'};S.items[`${b.id}:ba-04`]={checked:true,qty:'1',year:'',notes:'Toilet'};S.items[`${b.id}:ba-11`]={checked:true,qty:'1',year:'',notes:'Tub surround'};S.items[`${b.id}:ba-15`]={checked:true,qty:'1',year:'',notes:'Mirror'}})}
+if(type==='cosmetic'){
+  S.rooms.interior.instances.forEach(r => {
+    S.items[`${r.id}:ig-05`] = {checked:true,qty:Math.round(sqft*0.7)+'',year:'',notes:'Vinyl plank'};
+    S.items[`${r.id}:ig-06`] = {checked:true,qty:Math.round(sqft*0.3)+'',year:'',notes:'Carpet bedrooms'};
+    S.items[`${r.id}:ig-07`] = {checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'2-coat paint'};
+    S.items[`${r.id}:ig-19`] = {checked:true,qty:Math.round(sqft*0.15)+'',year:'',notes:'Baseboards'};
+    S.items[`${r.id}:ig-20`] = {checked:true,qty:'1',year:'',notes:'Punch list'};
+    S.items[`${r.id}:ig-22`] = {checked:true,qty:Math.round(sqft/100)+'',year:'',notes:'Light fixtures'};
+    S.items[`${r.id}:ig-27`] = {checked:true,qty:'1',year:'',notes:'Final cleaning'};
+  });
+}
+else if(type==='average'){
+  S.rooms.interior.instances.forEach(r => {
+    S.items[`${r.id}:ig-05`] = {checked:true,qty:Math.round(sqft*0.7)+'',year:'',notes:'Vinyl plank'};
+    S.items[`${r.id}:ig-06`] = {checked:true,qty:Math.round(sqft*0.3)+'',year:'',notes:'Carpet'};
+    S.items[`${r.id}:ig-07`] = {checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'Paint'};
+    S.items[`${r.id}:ig-19`] = {checked:true,qty:Math.round(sqft*0.15)+'',year:'',notes:'Baseboards'};
+    S.items[`${r.id}:ig-20`] = {checked:true,qty:'1',year:'',notes:'Punch list'};
+    S.items[`${r.id}:ig-22`] = {checked:true,qty:Math.round(sqft/100)+'',year:'',notes:'Light fixtures'};
+    S.items[`${r.id}:ig-27`] = {checked:true,qty:'1',year:'',notes:'Final cleaning'};
+  });
+  S.rooms.kitchen.instances.forEach(r => {
+    S.items[`${r.id}:kt-05`] = {checked:true,qty:'1',year:'',notes:'Cabinet paint'};
+    S.items[`${r.id}:kt-06`] = {checked:true,qty:'20',year:'',notes:'Granite'};
+    S.items[`${r.id}:kt-07`] = {checked:true,qty:'1',year:'',notes:'Backsplash'};
+    S.items[`${r.id}:kt-11`] = {checked:true,qty:'1',year:'',notes:'Sink'};
+    S.items[`${r.id}:kt-16`] = {checked:true,qty:'1',year:'',notes:'Dishwasher'};
+    S.items[`${r.id}:kt-17`] = {checked:true,qty:'1',year:'',notes:'Fridge'};
+  });
+  S.rooms.systems.instances.forEach(r => {
+    S.items[`${r.id}:as-02`] = {checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'AC condenser'};
+    S.items[`${r.id}:as-10`] = {checked:true,qty:'1',year:'',notes:'Switches/outlets'};
+  });
+  S.rooms.bathroom.instances.forEach(r=>{
+    S.items[`${r.id}:ba-03`]={checked:true,qty:'1',year:'',notes:'Vanity'};
+    S.items[`${r.id}:ba-04`]={checked:true,qty:'1',year:'',notes:'Toilet'};
+    S.items[`${r.id}:ba-07`]={checked:true,qty:'1',year:'',notes:'Reglaze'};
+  });
+}
+else if(type==='gut'){
+  S.rooms.interior.instances.forEach(r => {
+    S.items[`${r.id}:ig-07`] = {checked:true,qty:Math.round(sqft*3)+'',year:'',notes:'Full paint'};
+    S.items[`${r.id}:ig-25`] = {checked:true,qty:'1',year:'',notes:'Demo'};
+    S.items[`${r.id}:ig-26`] = {checked:true,qty:'3',year:'',notes:'Haul off'};
+    S.items[`${r.id}:ig-27`] = {checked:true,qty:'1',year:'',notes:'Cleaning'};
+  });
+  S.rooms.kitchen.instances.forEach(r => {
+    S.items[`${r.id}:kt-02`] = {checked:true,qty:'18',year:'',notes:'Uppers'};
+    S.items[`${r.id}:kt-03`] = {checked:true,qty:'18',year:'',notes:'Lowers'};
+    S.items[`${r.id}:kt-06`] = {checked:true,qty:'24',year:'',notes:'Granite'};
+    S.items[`${r.id}:kt-11`] = {checked:true,qty:'1',year:'',notes:'Sink'};
+    S.items[`${r.id}:kt-13`] = {checked:true,qty:'1',year:'',notes:'Range'};
+    S.items[`${r.id}:kt-16`] = {checked:true,qty:'1',year:'',notes:'Dishwasher'};
+    S.items[`${r.id}:kt-17`] = {checked:true,qty:'1',year:'',notes:'Fridge'};
+  });
+  S.rooms.systems.instances.forEach(r => {
+    S.items[`${r.id}:as-01`] = {checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'Furnace'};
+    S.items[`${r.id}:as-02`] = {checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'AC'};
+    S.items[`${r.id}:as-08`] = {checked:true,qty:'1',year:new Date().getFullYear()+'',notes:'Water heater'};
+    S.items[`${r.id}:as-16`] = {checked:true,qty:Math.round(sqft*1.25/100)+'',year:'',notes:'Roof'};
+    S.items[`${r.id}:as-18`] = {checked:true,qty:'1',year:'',notes:'200A panel'};
+    S.items[`${r.id}:as-19`] = {checked:true,qty:sqft+'',year:'',notes:'Full rewire'};
+    S.items[`${r.id}:as-23`] = {checked:true,qty:Math.round(sqft*3.5)+'',year:'',notes:'Drywall'};
+  });
+  S.rooms.bathroom.instances.forEach(r=>{
+    S.items[`${r.id}:ba-02`]={checked:true,qty:'4',year:'',notes:'Vanity'};
+    S.items[`${r.id}:ba-04`]={checked:true,qty:'1',year:'',notes:'Toilet'};
+    S.items[`${r.id}:ba-11`]={checked:true,qty:'1',year:'',notes:'Tub surround'};
+    S.items[`${r.id}:ba-15`]={checked:true,qty:'1',year:'',notes:'Mirror'};
+  });
+  S.rooms.exterior.instances.forEach(r => {
+    S.items[`${r.id}:ex-04`] = {checked:true,qty:'1',year:'',notes:'Landscaping'};
+    S.items[`${r.id}:ex-14`] = {checked:true,qty:'12',year:'',notes:'Windows'};
+    S.items[`${r.id}:ex-18`] = {checked:true,qty:'120',year:'',notes:'Gutters'};
+  });
+}
 const label=type==='cosmetic'?'Cosmetic Renovation':type==='average'?'Standard Renovation':'Major Gut Rehab';
 saveCurrentState();render();showToast(`${label} applied for ${sqft} sqft`)}
-
 // ============================================================
 // PARTIAL UPDATE
 // ============================================================
@@ -1161,6 +1347,7 @@ const hdr=document.getElementById('running-total');if(hdr){const newT=calcTotal(
 // ============================================================
 document.body.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;
 if(action==='open-panel'){openPanel();return}
+if(action==='replay-tour'){replayTour();return}
 if(action==='export'){exportPackage();return}
 if(action==='open-deal'){openDealAnalyzer();return}
 if(action==='open-presets'){closePanel();openPresetModal();return}
@@ -1172,7 +1359,7 @@ if(action==='share-email'){shareEmail();return}
 if(action==='share-estimate'){shareEstimate();return}
 if(action==='print-pdf'){closePanel();S.showSummary=true;render();setTimeout(()=>window.print(),100);return}
 if(action==='toggle-prop'){S.propOpen=!S.propOpen;render();return}
-if(action==='toggle-item'){pushUndo();const id=btn.dataset.id;const s=S.items[id];s.checked=!s.checked;if(!s.checked){s.qty='';s.notes=''}if(navigator.vibrate)navigator.vibrate(10);confettiFired=false;saveCurrentState();render();if(s.checked)setTimeout(()=>document.querySelector(`[data-action="update-qty"][data-id="${CSS.escape(id)}"]`)?.focus(),50);return}
+if(action==='toggle-item'){pushUndo();const id=btn.dataset.id;const s=S.items[id];s.checked=!s.checked;if(!s.checked){s.qty='';s.notes=''}syncNoActionNeeded(id, s.checked);if(navigator.vibrate)navigator.vibrate(10);confettiFired=false;saveCurrentState();render();if(s.checked)setTimeout(()=>document.querySelector(`[data-action="update-qty"][data-id="${CSS.escape(id)}"]`)?.focus(),50);return}
 if(action==='switch-cat'){S.currentCat=parseInt(btn.dataset.index);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='prev-cat'){S.currentCat=Math.max(0,S.currentCat-1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='next-cat'){S.currentCat=Math.min(CATEGORIES.length-1,S.currentCat+1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
@@ -1447,125 +1634,110 @@ function fallbackCopy(text){navigator.clipboard?.writeText(text).then(()=>showTo
 // ONBOARDING TOUR
 // ============================================================
 const ONBOARD_STEPS=[
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',title:'Welcome to SparkGroup Estimator',desc:'Run walkthrough estimates in the field, calculate repair budgets, and analyze profit deals in one click. Let\'s take a tour of the features!'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',title:'Category Navigation',desc:'Use the tabs at the top of the screen to switch between Interior, Kitchen, Bathrooms, Systems, and Exterior categories.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"/><polyline points="9 11 12 14 16 8"/></svg>',title:'Estimating Repair Items',desc:'Tap any item checkmark to select it, then enter the quantity. The running total and completion progress bar update live.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/><path d="M12 1a3 3 0 0 0-3 3v2a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" opacity="0.25"/></svg>',title:'Media Logging & Notes',desc:'For checked items, attach site photos and record voice memos. Add specific notes to document repair needs in the field.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10M19 13h2M5 13h2"/></svg>',title:'Multi-Room Management',desc:'Create multiple room configurations. Tap "+ Add" in categories like Bathrooms, Kitchens, or Interior (for Bedroom/Living Area subdivisions) to track costs independently.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><path d="M20 9.5a2.121 2.121 0 0 1 3 3L15 21l-4 1 1-4 8-8z" stroke-width="1.5"/></svg>',title:'Custom Price Overrides',desc:'Tap the cost of any item (underlined with a pencil icon) to edit standard prices per-project or globally across all projects.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',title:'Custom Items & Deletion',desc:'Tap "+ Add Custom Line Item" at the bottom of any group to add unique items, or click the red trash bin icon next to any item to delete it.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><circle cx="12" cy="12" r="3" opacity="0.25"/><path d="M20 7h-9M14 17h-9" opacity="0.25"/></svg>',title:'Walkthrough Tools',desc:'Open the settings menu (☰) to search items instantly, upload standard pricing CSV sheets, or apply Renovation Presets templates.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>',title:'Deal Analyzer',desc:'Tap "Analyze Deal" to enter ARV and purchase price. Check projected profits, ROI, and view the capital allocation chart.'},
-  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',title:'Branding, PDF & Excel Exports',desc:'Enter your Company and Estimator details in the menu to brand estimates. Export detailed Excel sheets, print PDFs, or draft emails in one tap.'}
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',title:'Welcome to SparkGroup Estimator',desc:"Run walkthrough estimates in the field, calculate repair budgets, and analyze profit deals in one click. Let's take a tour of the features!"},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',title:'Category Navigation',desc:"Use the tabs at the top of the screen to switch between Interior/General, Kitchen, Bathroom, Systems, and Exterior categories."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',title:'Room Management',desc:"Create multiple room configurations. Tap '+ Add' in categories to track costs for independent bedrooms, baths, or custom subdivisions."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"/><polyline points="9 11 12 14 16 8"/></svg>',title:'Item Cards',desc:"Tap any item checkmark to select it, then enter the quantity. The running total and completion progress bar update live."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><path d="M20 9.5a2.121 2.121 0 0 1 3 3L15 21l-4 1 1-4 8-8z" stroke-width="1.5"/></svg>',title:'Price Override',desc:"Tap the cost of any item (underlined with a pencil icon) to edit standard prices per-project or globally across all projects."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',title:'No Action Needed',desc:"Every group includes a 'No Action Needed' option to mark it reviewed when no work is required."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/><path d="M12 1a3 3 0 0 0-3 3v2a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" opacity="0.25"/></svg>',title:'Photo & Voice Capture',desc:"For checked items, attach site photos and record voice memos. Add specific notes to document repair needs in the field."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',title:'Running Total & Progress Bar',desc:"Track always-visible cost totals, segment breakdowns, and overall checklist completion progress."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',title:'Control Center',desc:"Open the settings menu (☰) to search items, manage projects, and customize app preferences."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',title:'Renovation Presets',desc:"Quick-apply Cosmetic, Standard, or Full Gut Renovation packages based on the property square footage."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="2" y="13" width="4" height="8" rx="1"/></svg>',title:'Deal Analyzer',desc:"Tap 'Analyze Deal' to enter ARV and purchase price. Check projected profits, ROI, and view the capital allocation chart."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>',title:'Export & Reports',desc:"Export styled Excel spreadsheets, print PDF reports, or copy clean summaries to email and text message."},
+  {icon:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',title:'Get Started',desc:"You're ready to go! Start running walkthrough estimates, analyzing deals, and winning property bids."}
 ];
 let onboardStep=0;
+
+// ============================================================
+// SIDEBAR COLLAPSIBLE PANELS & HELPERS
+// ============================================================
+function toggleSidebarSection(sectionId) {
+  const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
+  state[sectionId] = !state[sectionId];
+  localStorage.setItem('sparkPanelState', JSON.stringify(state));
+  applySidebarSectionsState();
+}
+
+function applySidebarSectionsState() {
+  const defaults = {
+    profile: false,
+    projects: true,
+    tools: true,
+    export: true,
+    pricing: true,
+    preferences: true,
+    help: true
+  };
+  const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
+  const merged = { ...defaults, ...state };
+  
+  Object.keys(merged).forEach(id => {
+    const content = document.getElementById(`content-${id}`);
+    const chevron = document.getElementById(`chevron-${id}`);
+    const isExpanded = merged[id];
+    if (content) {
+      if (isExpanded) {
+        content.classList.remove('collapsed');
+      } else {
+        content.classList.add('collapsed');
+      }
+    }
+    if (chevron) {
+      if (isExpanded) {
+        chevron.classList.remove('collapsed');
+      } else {
+        chevron.classList.add('collapsed');
+      }
+    }
+  });
+}
+
+function replayTour() {
+  closePanel();
+  onboardStep = 0;
+  renderOnboardStep();
+}
+
+function syncNoActionNeeded(sid, checked) {
+  const parts = sid.split(':');
+  const itemId = parts.length > 1 ? parts[1] : parts[0];
+  const roomId = parts.length > 1 ? parts[0] : null;
+  const gid = ITEM_TO_GROUP[itemId];
+  if (!gid) return;
+  const group = GROUPS[gid];
+  if (!group) return;
+  const nanId = group.ids.find(id => {
+    const def = findItemDef(id);
+    return def && def.noAction;
+  });
+  if (!nanId) return;
+  const nanSid = roomId ? `${roomId}:${nanId}` : nanId;
+
+  if (itemId === nanId) {
+    if (checked) {
+      group.ids.forEach(id => {
+        if (id !== nanId) {
+          const itemSid = roomId ? `${roomId}:${id}` : id;
+          if (S.items[itemSid]) {
+            S.items[itemSid].checked = false;
+            S.items[itemSid].qty = '';
+            S.items[itemSid].notes = '';
+          }
+        }
+      });
+    }
+  } else {
+    if (checked && S.items[nanSid]) {
+      S.items[nanSid].checked = false;
+    }
+  }
+}
+
 function showOnboarding(){if(localStorage.getItem('sparkOnboardDone'))return;onboardStep=0;renderOnboardStep()}
 function endOnboarding(){
   localStorage.setItem('sparkOnboardDone','1');
-  document.getElementById('onboard-overlay').innerHTML='';
-  document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
-  closePanel();
-  closeDealAnalyzer();
-  S.showSummary=false;
-  S.currentCat=0;
-  const firstCat=CATEGORIES[0];
-  if(firstCat&&firstCat.items.length){
-    const firstId=firstCat.items[0].id;
-    if(S.items[firstId]&&S.items[firstId].qty==='100'&&!S.items[firstId].notes){
-      S.items[firstId].checked=false;
-      S.items[firstId].qty='';
-    }
-  }
-  saveCurrentState();
-  render();
-}
-function renderOnboardStep(){
-  const s=ONBOARD_STEPS[onboardStep];
-  const last=onboardStep===ONBOARD_STEPS.length-1;
-  
-  document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
-  closePanel();
-  closeDealAnalyzer();
-  
-  if(onboardStep===0){
-    S.showSummary=false;
-    S.currentCat=0;
-    render();
-  }else if(onboardStep===1){
-    S.showSummary=false;
-    S.currentCat=0;
-    render();
-    document.querySelector('.section-tabs')?.classList.add('tour-highlight');
-  }else if(onboardStep===2){
-    S.showSummary=false;
-    S.currentCat=0;
-    render();
-    const card=document.querySelector('.item-card');
-    if(card){
-      card.classList.add('tour-highlight');
-      card.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  }else if(onboardStep===3){
-    S.showSummary=false;
-    S.currentCat=0;
-    const firstCat=CATEGORIES[0];
-    if(firstCat&&firstCat.items.length){
-      const firstId=firstCat.items[0].id;
-      if(!S.items[firstId])S.items[firstId]={checked:false,qty:'',year:'',notes:''};
-      S.items[firstId].checked=true;
-      S.items[firstId].qty='100';
-    }
-    render();
-    const card=document.querySelector('.item-card');
-    if(card){
-      card.scrollIntoView({behavior:'smooth',block:'center'});
-      card.querySelector('.media-section')?.classList.add('tour-highlight');
-    }
-  }else if(onboardStep===4){
-    S.showSummary=false;
-    S.currentCat=2; // Bathrooms
-    render();
-    document.querySelector('.room-tabs')?.classList.add('tour-highlight');
-  }else if(onboardStep===5){
-    S.showSummary=false;
-    S.currentCat=0;
-    render();
-    const costBadge=document.querySelector('.item-cost-label');
-    costBadge?.classList.add('tour-highlight');
-  }else if(onboardStep===6){
-    S.showSummary=false;
-    S.currentCat=0;
-    // Make sure flooring group is expanded so custom add button is visible
-    const ek = 'i1:ig:flooring';
-    if (!S.expandedGroups.includes(ek)) S.expandedGroups.push(ek);
-    render();
-    setTimeout(() => {
-      const addRow = document.querySelector('.group-add-item-row');
-      addRow?.classList.add('tour-highlight');
-      addRow?.scrollIntoView({behavior:'smooth',block:'center'});
-    }, 50);
-  }else if(onboardStep===7){
-    S.showSummary=false;
-    render();
-    openPanel();
-    setTimeout(()=>{
-      document.getElementById('side-panel')?.classList.add('tour-highlight');
-    },50);
-  }else if(onboardStep===8){
-    S.showSummary=false;
-    render();
-    openDealAnalyzer();
-    setTimeout(()=>{
-      document.querySelector('.sheet-box')?.classList.add('tour-highlight');
-    },50);
-  }else if(onboardStep===9){
-    S.showSummary=true;
-    render();
-    setTimeout(()=>{
-      document.querySelector('.app-header')?.classList.add('tour-highlight');
-    },50);
-  }
-  
   document.getElementById('onboard-overlay').innerHTML='';
   document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
   closePanel();
@@ -1604,6 +1776,11 @@ function renderOnboardStep(){
     document.querySelector('.section-tabs')?.classList.add('tour-highlight');
   }else if(onboardStep===2){
     S.showSummary=false;
+    S.currentCat=0; // Interior/General has room subdivision tabs
+    render();
+    document.querySelector('.room-tabs')?.classList.add('tour-highlight');
+  }else if(onboardStep===3){
+    S.showSummary=false;
     S.currentCat=0;
     render();
     const card=document.querySelector('.item-card');
@@ -1611,15 +1788,29 @@ function renderOnboardStep(){
       card.classList.add('tour-highlight');
       card.scrollIntoView({behavior:'smooth',block:'center'});
     }
-  }else if(onboardStep===3){
+  }else if(onboardStep===4){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+    const costBadge=document.querySelector('.item-cost-label');
+    costBadge?.classList.add('tour-highlight');
+  }else if(onboardStep===5){
+    S.showSummary=false;
+    S.currentCat=0;
+    render();
+    const nanCard=document.querySelector('.nan-card');
+    nanCard?.classList.add('tour-highlight');
+    nanCard?.scrollIntoView({behavior:'smooth',block:'center'});
+  }else if(onboardStep===6){
     S.showSummary=false;
     S.currentCat=0;
     const firstCat=CATEGORIES[0];
     if(firstCat&&firstCat.items.length){
       const firstId=firstCat.items[0].id;
-      if(!S.items[firstId])S.items[firstId]={checked:false,qty:'',year:'',notes:''};
-      S.items[firstId].checked=true;
-      S.items[firstId].qty='100';
+      const firstSid = `i1:${firstId}`;
+      if(!S.items[firstSid])S.items[firstSid]={checked:false,qty:'',year:'',notes:''};
+      S.items[firstSid].checked=true;
+      S.items[firstSid].qty='100';
     }
     render();
     const card=document.querySelector('.item-card');
@@ -1627,37 +1818,42 @@ function renderOnboardStep(){
       card.scrollIntoView({behavior:'smooth',block:'center'});
       card.querySelector('.media-section')?.classList.add('tour-highlight');
     }
-  }else if(onboardStep===4){
-    S.showSummary=false;
-    S.currentCat=2; // Bathrooms
-    render();
-    document.querySelector('.room-tabs')?.classList.add('tour-highlight');
-  }else if(onboardStep===5){
+  }else if(onboardStep===7){
     S.showSummary=false;
     S.currentCat=0;
     render();
-    const costBadge=document.querySelector('.item-cost-label');
-    costBadge?.classList.add('tour-highlight');
-  }else if(onboardStep===6){
+    document.querySelector('.header-body')?.classList.add('tour-highlight');
+  }else if(onboardStep===8){
     S.showSummary=false;
     render();
     openPanel();
     setTimeout(()=>{
       document.getElementById('side-panel')?.classList.add('tour-highlight');
     },50);
-  }else if(onboardStep===7){
+  }else if(onboardStep===9){
+    S.showSummary=false;
+    render();
+    openPanel();
+    setTimeout(()=>{
+      document.querySelector('[data-action="open-presets"]')?.classList.add('tour-highlight');
+    },50);
+  }else if(onboardStep===10){
     S.showSummary=false;
     render();
     openDealAnalyzer();
     setTimeout(()=>{
       document.querySelector('.sheet-box')?.classList.add('tour-highlight');
     },50);
-  }else if(onboardStep===8){
+  }else if(onboardStep===11){
+    S.showSummary=false;
+    render();
+    openPanel();
+    setTimeout(()=>{
+      document.getElementById('section-export')?.classList.add('tour-highlight');
+    },50);
+  }else if(onboardStep===12){
     S.showSummary=true;
     render();
-    setTimeout(()=>{
-      document.querySelector('.app-header')?.classList.add('tour-highlight');
-    },50);
   }
 
   document.getElementById('onboard-overlay').innerHTML=`<div class="onboard-overlay"><div class="onboard-card"><div class="onboard-emoji">${s.icon}</div><div class="onboard-title">${s.title}</div><div class="onboard-desc">${s.desc}</div><div class="onboard-dots">${ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot ${i===onboardStep?'active':''}"></div>`).join('')}</div><button class="onboard-next" id="onboard-next">${last?'Get Started →':'Next'}</button><button class="onboard-skip" id="onboard-skip">${last?'':'Skip tour'}</button></div></div>`;
@@ -1673,7 +1869,6 @@ function renderOnboardStep(){
   const skip=document.getElementById('onboard-skip');
   if(skip)skip.addEventListener('click',endOnboarding);
 }
-
 // ============================================================
 // QUICK CALCULATOR
 // ============================================================
@@ -1725,13 +1920,13 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v27';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v28';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
 // ============================================================
 (async function(){const theme=localStorage.getItem('sparkTheme');if(theme==='dark'||(!theme&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');
-S.globalPriceOverrides=await dbGetGlobalPrices();const list=await dbGetProjects();if(list.length>0)loadProjectIntoState(list[0]);else{S.currentProjectId=`proj_${Date.now()}`;S.currentProjectName='New Estimate';initItems();await saveCurrentState()}render();showOnboarding();
+S.globalPriceOverrides=await dbGetGlobalPrices();const list=await dbGetProjects();if(list.length>0)loadProjectIntoState(list[0]);else{S.currentProjectId=`proj_${Date.now()}`;S.currentProjectName='New Estimate';initItems();await saveCurrentState()}render();applySidebarSectionsState();showOnboarding();
 window.addEventListener('visibilitychange',()=>{if(document.hidden)saveCurrentState()});
 window.addEventListener('pagehide',saveCurrentState);
 window.addEventListener('freeze',saveCurrentState)})();
