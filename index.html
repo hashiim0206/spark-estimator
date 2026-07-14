@@ -1147,7 +1147,23 @@ function updateResetPricingButtonVisibility(){
   if(btnGroup)btnGroup.style.display=(hasProj||hasGlob)?'block':'none';
 }
 async function openPanel(){await refreshPanelList();applySidebarSectionsState();pushModalState('panel');lockBodyScroll();document.getElementById('brand-company').value=S.companyName||'';document.getElementById('brand-estimator').value=S.estimatorName||'';document.getElementById('brand-email').value=S.estimatorEmail||'';document.getElementById('brand-phone').value=S.estimatorPhone||'';updateResetPricingButtonVisibility();document.getElementById('side-panel').classList.add('open');document.getElementById('panel-overlay').classList.add('open')}
-function closePanel(isPopstate){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open');unlockBodyScroll();if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('panel')}
+function closePanel(isPopstate){
+  const el = document.getElementById('side-panel');
+  if (el) el.classList.remove('open');
+  const overlay = document.getElementById('panel-overlay');
+  if (overlay) overlay.classList.remove('open');
+  unlockBodyScroll();
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    const count = openModalsStack.length;
+    for (let i = 0; i < count; i++) {
+      history.back();
+    }
+    openModalsStack = [];
+  } else {
+    removeModalState('panel');
+  }
+}
 async function refreshPanelList(){const list=await dbGetProjects();const el=document.getElementById('panel-list');if(!list.length){el.innerHTML='<p class="panel-empty">No saved projects</p>';return}el.innerHTML=list.map(p=>{const a=p.id===S.currentProjectId;const safe=(p.name||'').replace(/"/g,'&quot;');return`<div class="panel-project ${a?'active':''}"><button class="panel-project-btn" data-action="load-project" data-pid="${p.id}"><div class="panel-project-name">${p.name}</div><div class="panel-project-date">${fmtDate(p.savedAt)}</div>${a?'<div class="panel-project-active">Active</div>':''}</button><div class="panel-project-actions"><button class="panel-action-btn" data-action="rename-project-panel" data-pid="${p.id}" data-pname="${safe}">${I.pen}</button>${!a?`<button class="panel-action-btn delete" data-action="delete-project" data-pid="${p.id}" data-pname="${safe}">${I.del}</button>`:''}</div></div>`}).join('')}
 
 // ============================================================
@@ -1726,12 +1742,13 @@ let onboardStep=0;
 // SIDEBAR COLLAPSIBLE PANELS & HELPERS
 // ============================================================
 function toggleSidebarSection(sectionId, isPopstate) {
-  const isPop = isPopstate === true;
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
   if(isPop){
     const state = getAccordionState();
     state[sectionId] = false;
     setAccordionState(state);
     applySidebarSectionsState();
+    removeModalState('section-' + sectionId);
   }else{
     const state = getAccordionState();
     state[sectionId] = !state[sectionId];
@@ -1740,8 +1757,11 @@ function toggleSidebarSection(sectionId, isPopstate) {
     if(state[sectionId]){
       pushModalState('section-' + sectionId);
     }else{
-      removeModalState('section-' + sectionId);
-      if(typeof history !== 'undefined' && history.back) history.back();
+      if(typeof history !== 'undefined' && history.back){
+        history.back();
+      } else {
+        removeModalState('section-' + sectionId);
+      }
     }
   }
 }
