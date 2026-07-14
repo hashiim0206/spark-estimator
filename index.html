@@ -1419,7 +1419,7 @@ else if(type==='gut'){
   });
 }
 const label=type==='cosmetic'?'Cosmetic Renovation':type==='average'?'Standard Renovation':'Major Gut Rehab';
-saveCurrentState();render();showToast(`${label} applied for ${sqft} sqft`)}
+saveCurrentState();render();closePanel();}
 // ============================================================
 // PARTIAL UPDATE
 // ============================================================
@@ -1490,7 +1490,7 @@ if(action==='remove-voice'){const id=btn.dataset.id;const idx=parseInt(btn.datas
 if(action==='show-summary'){S.showSummary=true;saveCurrentState();render();return}
 if(action==='back-to-edit'){S.showSummary=false;render();return}
 if(action==='reset'){if(!confirm('Start a new estimate?'))return;pushUndo();S.rooms=JSON.parse(JSON.stringify(DEFAULT_ROOMS));S.currentCat=0;S.showSummary=false;S.projectPriceOverrides={};S.property={...DEFAULT_PROP};S.dealAnalyzer={...DEFAULT_DEAL};initItems();S.photos={};S.voiceMemos={};confettiFired=false;saveCurrentState();render();showToast('Fresh estimate started');return}
-if(action==='search-go'){const ci=parseInt(btn.dataset.cat);const sid=btn.dataset.sid;if(sid){const itemId=sid.includes(':')?sid.split(':')[1]:sid;const gid=ITEM_TO_GROUP[itemId];if(gid){const ek=sid.includes(':')?`${sid.split(':')[0]}:${gid}`:gid;if(!S.expandedGroups.includes(ek))S.expandedGroups.push(ek)}}S.currentCat=ci;closeSearch();render();requestAnimationFrame(()=>{setTimeout(()=>{const targetBtn=document.querySelector(`[data-action="toggle-item"][data-id="${CSS.escape(sid)}"]`);const card=targetBtn?.closest('[data-item-card]');if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('search-highlight');setTimeout(()=>card.classList.remove('search-highlight'),2000)}else{document.getElementById('scroll-area')?.scrollTo(0,0)}},100)});return}
+if(action==='search-go'){const ci=parseInt(btn.dataset.cat);const sid=btn.dataset.sid;if(sid){const itemId=sid.includes(':')?sid.split(':')[1]:sid;const gid=ITEM_TO_GROUP[itemId];if(gid){const ek=sid.includes(':')?`${sid.split(':')[0]}:${gid}`:gid;if(!S.expandedGroups.includes(ek))S.expandedGroups.push(ek)}}S.currentCat=ci;closePanel();render();requestAnimationFrame(()=>{setTimeout(()=>{const targetBtn=document.querySelector(`[data-action="toggle-item"][data-id="${CSS.escape(sid)}"]`);const card=targetBtn?.closest('[data-item-card]');if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('search-highlight');setTimeout(()=>card.classList.remove('search-highlight'),2000)}else{document.getElementById('scroll-area')?.scrollTo(0,0)}},100)});return}
 if(action==='load-project'){const pid=btn.dataset.pid;if(pid===S.currentProjectId){closePanel();return}saveCurrentState();dbGetProjects().then(list=>{const proj=list.find(p=>p.id===pid);if(proj){loadProjectIntoState(proj);confettiFired=false;render();closePanel();showToast(`Loaded ${proj.name}`)}});return}
 if(action==='rename-project-panel'){const pid=btn.dataset.pid;openModal('Rename Project','e.g. 123 Main St',btn.dataset.pname,async name=>{const list=await dbGetProjects();const proj=list.find(p=>p.id===pid);if(proj){proj.name=name;await dbSaveProject(proj);if(pid===S.currentProjectId){S.currentProjectName=name;render()}}await refreshPanelList()});return}
 if(action==='delete-project'){const pid=btn.dataset.pid;if(!confirm(`Delete "${btn.dataset.pname}"?`))return;await dbDeleteProject(pid);await refreshPanelList();showToast('Project deleted');return}
