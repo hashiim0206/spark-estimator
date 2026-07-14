@@ -1226,6 +1226,23 @@ function closePanel(isPopstate){
   if (el) el.classList.remove('open');
   const overlay = document.getElementById('panel-overlay');
   if (overlay) overlay.classList.remove('open');
+  
+  // Hide all modals synchronously in DOM on manual close
+  const searchEl = document.getElementById('search-overlay');
+  if (searchEl) searchEl.classList.remove('open');
+  const presetEl = document.getElementById('preset-modal');
+  if (presetEl) presetEl.classList.remove('open');
+  const calcEl = document.getElementById('calc-overlay');
+  if (calcEl) calcEl.classList.remove('open');
+  const dealEl = document.getElementById('deal-sheet');
+  if (dealEl) dealEl.classList.remove('open');
+  const customEl = document.getElementById('custom-item-modal');
+  if (customEl) customEl.classList.remove('open');
+  const overrideEl = document.getElementById('price-override-modal');
+  if (overrideEl) overrideEl.classList.remove('open');
+  const photoSourceEl = document.getElementById('photo-source-modal');
+  if (photoSourceEl) photoSourceEl.classList.remove('open');
+
   unlockBodyScroll();
   
   // Collapse all accordion sections on exit
@@ -1240,7 +1257,6 @@ function closePanel(isPopstate){
     for (let i = 0; i < count; i++) {
       history.back();
     }
-    openModalsStack = [];
   } else {
     removeModalState('panel');
   }
