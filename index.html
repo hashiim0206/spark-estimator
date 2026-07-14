@@ -982,7 +982,19 @@ let pendingModal=null;
 function openModal(title,ph,val,cb){pushModalState('app-modal');document.getElementById('modal-select-wrap').style.display='none';pendingModal=cb;document.getElementById('modal-title').textContent=title;const inp=document.getElementById('modal-input');inp.placeholder=ph||'';inp.value=val||'';document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function openRoomModal(catId,cb){pushModalState('app-modal');const selectWrap=document.getElementById('modal-select-wrap');const select=document.getElementById('modal-select');const title=document.getElementById('modal-title');const inp=document.getElementById('modal-input');title.textContent='Add Room';inp.placeholder='e.g. Master Bedroom';if(catId==='interior'){selectWrap.style.display='block';select.innerHTML=`<option value="Bedroom">Bedroom</option><option value="Living/Common">Living/Common</option><option value="Interior/General">Interior/General</option>`;select.onchange=()=>{const type=select.value;const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type===type).length+1;inp.value=`${type} ${count}`};const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type==='Bedroom').length+1;inp.value=`Bedroom ${count}`}else{selectWrap.style.display='none';const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];inp.value=`${cat.name} ${rd.instances.length+1}`}pendingModal=name=>{const type=catId==='interior'?select.value:CATEGORIES.find(c=>c.id===catId).name;cb({name,type})};document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function confirmModal(){const v=document.getElementById('modal-input').value.trim();if(v&&pendingModal)pendingModal(v);closeModal()}
-function closeModal(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null;}else{history.back();}removeModalState('app-modal')}
+function closeModal(isPopstate){
+  const el = document.getElementById('app-modal');
+  if (el) el.classList.remove('open');
+  const selectWrap = document.getElementById('modal-select-wrap');
+  if (selectWrap) selectWrap.style.display = 'none';
+  pendingModal = null;
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('app-modal');
+  }
+}
 let customItemGid = null;
 let customItemRid = null;
 function openCustomItemModal(gid, rid) {
@@ -996,15 +1008,16 @@ function openCustomItemModal(gid, rid) {
   setTimeout(() => document.getElementById('custom-item-name').focus(), 80);
 }
 function closeCustomItemModal(isPopstate) {
+  const el = document.getElementById('custom-item-modal');
+  if (el) el.classList.remove('open');
+  customItemGid = null;
+  customItemRid = null;
   const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
-  if(isPop){
-    document.getElementById('custom-item-modal').classList.remove('open');
-    customItemGid = null;
-    customItemRid = null;
-  }else{
+  if (!isPop) {
     history.back();
+  } else {
+    removeModalState('custom-item');
   }
-  removeModalState('custom-item');
 }
 function confirmCustomItem() {
   const name = document.getElementById('custom-item-name').value.trim();
@@ -1067,14 +1080,15 @@ function openPriceOverrideModal(itemId) {
   setTimeout(() => document.getElementById('pom-cost-input').focus(), 80);
 }
 function closePriceOverrideModal(isPopstate) {
+  const el = document.getElementById('price-override-modal');
+  if (el) el.classList.remove('open');
+  overrideItemId = null;
   const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
-  if(isPop){
-    document.getElementById('price-override-modal').classList.remove('open');
-    overrideItemId = null;
-  }else{
+  if (!isPop) {
     history.back();
+  } else {
+    removeModalState('price-override');
   }
-  removeModalState('price-override');
 }
 async function confirmPriceOverride() {
   if (!overrideItemId) return;
@@ -1112,7 +1126,16 @@ async function resetPriceOverride() {
   showToast('Price reset to default');
 }
 function openPresetModal(){pushModalState('presets');document.getElementById('preset-modal').classList.add('open')}
-function closePresetModal(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('preset-modal').classList.remove('open');}else{history.back();}removeModalState('presets')}
+function closePresetModal(isPopstate){
+  const el = document.getElementById('preset-modal');
+  if (el) el.classList.remove('open');
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('presets');
+  }
+}
 
 // ============================================================
 // PANEL
@@ -1131,7 +1154,16 @@ async function refreshPanelList(){const list=await dbGetProjects();const el=docu
 // SEARCH ENGINE
 // ============================================================
 function openSearch(){pushModalState('search');document.getElementById('search-overlay').classList.add('open');const inp=document.getElementById('search-input');inp.value='';inp.focus();renderSearchResults('')}
-function closeSearch(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('search-overlay').classList.remove('open');}else{history.back();}removeModalState('search')}
+function closeSearch(isPopstate){
+  const el = document.getElementById('search-overlay');
+  if (el) el.classList.remove('open');
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('search');
+  }
+}
 function performSearch(q){if(!q.trim())return[];const lq=q.trim().toLowerCase();const results=[];CATEGORIES.forEach((cat,ci)=>{const matches=[];cat.items.forEach(it=>{if(it.noAction)return;const nameLower=it.name.toLowerCase();const words=nameLower.split(/[^a-z0-9]+/);const match=nameLower.startsWith(lq)||words.some(w=>w.startsWith(lq))||(lq.includes(' ')&&nameLower.includes(lq));if(match){const sid=cat.multiRoom?`${(S.rooms[cat.id]?.instances[S.rooms[cat.id]?.current||0])?.id||''}:${it.id}`:it.id;matches.push({item:it,catIndex:ci,stateId:sid,checked:S.items[sid]?.checked})}});if(matches.length)results.push({catName:cat.name,color:CAT_COLORS[ci],matches})});return results}
 function renderSearchResults(q){const el=document.getElementById('search-results');if(!q.trim()){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">🔍</div><p style="font-size:15px;font-weight:600">Search all repair items</p><p style="font-size:12px;margin-top:4px">Type to filter across all ${CATEGORIES.flatMap(c=>c.items).filter(i=>!i.noAction).length} items</p></div>`;return}const groups=performSearch(q);if(!groups.length){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">😕</div><p style="font-size:15px;font-weight:600">No results for "${q}"</p></div>`;return}el.innerHTML=groups.map(g=>`<div class="search-cat-label" style="color:${g.color}">${g.catName}</div>${g.matches.map(m=>`<button class="search-result-item" data-action="search-go" data-cat="${m.catIndex}" data-sid="${m.stateId}"><div><div class="search-result-name">${highlightMatch(m.item.name,q)}</div><div class="search-result-cost">$${getItemCost(m.item).toLocaleString('en-US',{minimumFractionDigits:2})} / ${m.item.unit}</div></div>${m.checked?'<span class="search-result-check">✓ Selected</span>':''}</button>`).join('')}`).join('')}
 function highlightMatch(text,q){const idx=text.toLowerCase().indexOf(q.toLowerCase());if(idx<0)return text;return text.slice(0,idx)+`<mark style="background:rgba(232,98,28,0.2);color:var(--spark-dark);border-radius:2px;padding:0 1px">${text.slice(idx,idx+q.length)}</mark>`+text.slice(idx+q.length)}
@@ -1273,7 +1305,16 @@ const zip=new JSZip();zip.file(`${baseName}.xlsx`,XLSX.write(wb,{bookType:'xlsx'
 // DEAL ANALYZER + SVG CHART
 // ============================================================
 function openDealAnalyzer(){pushModalState('deal');renderDealBody();document.getElementById('deal-sheet').classList.add('open')}
-function closeDealAnalyzer(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){const el=document.getElementById('deal-sheet');if(el)el.classList.remove('open');}else{history.back();}removeModalState('deal')}
+function closeDealAnalyzer(isPopstate){
+  const el = document.getElementById('deal-sheet');
+  if (el) el.classList.remove('open');
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('deal');
+  }
+}
 function calcDeal(){const arv=parseFloat(S.dealAnalyzer.arv)||0;const purchase=parseFloat(S.dealAnalyzer.purchasePrice)||0;const repairs=calcTotal();const closingCosts=arv*(S.dealAnalyzer.closingPct/100);const holdingCosts=S.dealAnalyzer.holdingMonths*S.dealAnalyzer.monthlyHolding;const financing=purchase*(S.dealAnalyzer.financingRate/100)*(S.dealAnalyzer.holdingMonths/12);const contingency=repairs*(S.dealAnalyzer.contingencyPct/100);const totalCosts=repairs+closingCosts+holdingCosts+financing+contingency;const totalInvestment=purchase+totalCosts;const profit=arv-totalInvestment;const roi=totalInvestment>0?(profit/totalInvestment*100):0;const margin=arv>0?(profit/arv*100):0;const rule70=purchase+repairs;const rule70Limit=arv*0.7;const rule70Pass=rule70<=rule70Limit;let verdictText='Walk Away',verdictClass='bad';if(arv>0){if(margin>=20){verdictText='Strong Deal';verdictClass='good'}else if(margin>=10){verdictText='Thin Margins';verdictClass='mid'}}return{arv,purchase,repairs,closingCosts,holdingCosts,financing,contingency,totalCosts,totalInvestment,profit,roi,margin,rule70,rule70Limit,rule70Pass,verdictText,verdictClass}}
 function renderDealOutput(){const r=calcDeal();const C=157.08;const si=r.totalInvestment||1;const pS=(r.purchase/si)*C;const rS=(r.repairs/si)*C;const sS=((r.totalCosts-r.repairs)/si)*C;
 return`${r.arv>0&&r.purchase>0?`<div class="deal-chart-container"><svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)"><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--border-light)" stroke-width="50"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--blue)" stroke-width="50" stroke-dasharray="${pS} ${C}" stroke-dashoffset="0"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--spark)" stroke-width="50" stroke-dasharray="${rS} ${C}" stroke-dashoffset="${-pS}"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--purple)" stroke-width="50" stroke-dasharray="${sS} ${C}" stroke-dashoffset="${-(pS+rS)}"/><circle cx="60" cy="60" r="18" fill="var(--surface)"/><text x="60" y="58" class="deal-chart-text" transform="rotate(90 60 60)">TOTAL BUY-IN</text><text x="60" y="72" transform="rotate(90 60 60)" style="font-size:10px;font-weight:800;fill:var(--text);text-anchor:middle">${fmt(r.totalInvestment)}</text></svg></div><div style="display:flex;justify-content:center;gap:12px;font-size:10px;font-weight:700;margin-bottom:18px"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--blue);border-radius:2px"></span>Purchase</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--spark);border-radius:2px"></span>Repairs</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px"></span>Soft Costs</span></div>`:''}<div class="deal-input-group"><label class="deal-label">Repair Estimate (from walkthrough)</label><div style="padding:10px 12px;background:var(--border-light);border-radius:var(--radius-md);font-size:16px;font-weight:700;color:var(--spark)">${fmt(r.repairs)}</div></div>${r.arv>0&&r.purchase>0?`<div class="deal-results"><div class="deal-result-row"><span class="deal-result-label">Closing Costs</span><span class="deal-result-value">${fmt(r.closingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Holding Costs</span><span class="deal-result-value">${fmt(r.holdingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Financing</span><span class="deal-result-value">${fmt(r.financing)}</span></div><div class="deal-result-row"><span class="deal-result-label">Contingency</span><span class="deal-result-value">${fmt(r.contingency)}</span></div><div class="deal-result-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><span class="deal-result-label" style="font-weight:700">Total Investment</span><span class="deal-result-value" style="font-size:16px">${fmt(r.totalInvestment)}</span></div><div class="deal-result-row"><span class="deal-result-label" style="font-weight:700">Projected Profit</span><span class="deal-result-value" style="font-size:16px;color:${r.profit>=0?'var(--green)':'var(--red)'}">${fmt(r.profit)}</span></div><div class="deal-result-row"><span class="deal-result-label">ROI</span><span class="deal-result-value">${r.roi.toFixed(1)}%</span></div><div class="deal-result-row"><span class="deal-result-label">Profit Margin</span><span class="deal-result-value">${r.margin.toFixed(1)}%</span></div></div><div class="deal-verdict ${r.verdictClass}">${r.verdictText}</div>`:'<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">Enter ARV and Purchase Price to see analysis</div>'}`}
@@ -1886,10 +1927,14 @@ function openPhotoSourceModal(id) {
   document.getElementById('photo-source-modal').classList.add('open');
 }
 function closePhotoSourceModal(isPopstate) {
+  const el = document.getElementById('photo-source-modal');
+  if (el) el.classList.remove('open');
   const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
-  document.getElementById('photo-source-modal').classList.remove('open');
-  if (!isPop) history.back();
-  removeModalState('photo-source');
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('photo-source');
+  }
 }
 function triggerPhotoInput(useCamera) {
   const id = photoItemId;
@@ -2068,7 +2113,16 @@ function renderOnboardStep(){
 // ============================================================
 let calcExpr='';
 function openCalc(){pushModalState('calc');document.getElementById('calc-overlay').classList.add('open');calcExpr='';updateCalcDisplay()}
-function closeCalc(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('calc-overlay').classList.remove('open');}else{history.back();}removeModalState('calc')}
+function closeCalc(isPopstate){
+  const el = document.getElementById('calc-overlay');
+  if (el) el.classList.remove('open');
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if (!isPop) {
+    history.back();
+  } else {
+    removeModalState('calc');
+  }
+}
 function updateCalcDisplay(){document.getElementById('calc-expr').textContent=calcExpr||'';let result='0';if(calcExpr){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))result=parseFloat(val.toFixed(4)).toLocaleString('en-US')}catch{}}document.getElementById('calc-result').textContent=result}
 function handleCalcBtn(v){if(v==='C'){calcExpr=''}else if(v==='='){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))calcExpr=String(parseFloat(val.toFixed(4)))}catch{}}else{calcExpr+=v}updateCalcDisplay()}
 document.getElementById('calc-overlay').addEventListener('click',e=>{const btn=e.target.closest('[data-calc]');if(btn)handleCalcBtn(btn.dataset.calc)});
@@ -2114,7 +2168,7 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v32';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v33';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
