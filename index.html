@@ -34,6 +34,7 @@
   --bg:#0F172A;--bg-alt:#020617;--surface:#1E293B;--surface-glass:rgba(30,41,59,0.82);
   --text:#F1F5F9;--text-sec:#94A3B8;--text-muted:#64748B;--border:#334155;--border-light:#1E293B;
   --green-bg:rgba(16,185,129,0.1);--yellow-bg:rgba(245,158,11,0.1);--red-bg:rgba(239,68,68,0.1);
+  --spark-dark:#FF8A50;--spark-glow:rgba(232,98,28,0.4);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
@@ -202,8 +203,81 @@ input,textarea,select{font:inherit}
 .photo-add-btn,.voice-add-btn{width:64px;height:64px;flex-shrink:0;border-radius:var(--radius-sm);border:2px dashed rgba(232,98,28,0.35);background:rgba(232,98,28,0.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--spark);font-size:9px;font-weight:600;transition:background var(--trans)}
 .photo-add-btn:active,.voice-add-btn:active{background:rgba(232,98,28,0.1)}
 .voice-add-btn.recording{border-color:var(--red);background:rgba(239,68,68,0.08);color:var(--red);animation:recPulse 1s infinite}
-.voice-memo{display:flex;align-items:center;gap:6px;background:var(--border-light);padding:6px 8px;border-radius:var(--radius-sm);font-size:11px;color:var(--text-sec)}
-.voice-memo audio{height:28px;max-width:140px}
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--border-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--trans), border-color var(--trans);
+  margin-top: 6px;
+}
+.custom-audio-player:hover {
+  background: var(--border);
+}
+.audio-play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--spark);
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  width: 24px;
+  height: 24px;
+  transition: transform var(--trans), background var(--trans);
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+}
+.audio-play-btn:hover {
+  background: var(--spark-light);
+  transform: scale(1.05);
+}
+.audio-play-btn:active {
+  transform: scale(0.95);
+}
+.audio-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+.audio-progress-fill {
+  height: 100%;
+  background: var(--spark);
+  border-radius: var(--radius-full);
+  width: 0%;
+}
+.audio-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sec);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.voice-del-btn {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: color var(--trans);
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.voice-del-btn:hover {
+  color: var(--red);
+}
 .voice-del{color:var(--red);font-size:14px;font-weight:700;padding:2px}
 .price-override-badge{font-size:9px;font-weight:700;color:var(--spark);background:rgba(232,98,28,0.1);padding:1px 5px;border-radius:var(--radius-full);margin-left:4px}
 
@@ -1153,6 +1227,13 @@ function closePanel(isPopstate){
   const overlay = document.getElementById('panel-overlay');
   if (overlay) overlay.classList.remove('open');
   unlockBodyScroll();
+  
+  // Collapse all accordion sections on exit
+  const state = getAccordionState();
+  Object.keys(state).forEach(k => state[k] = false);
+  setAccordionState(state);
+  applySidebarSectionsState();
+
   const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
   if (!isPop) {
     const count = openModalsStack.length;
@@ -1281,7 +1362,7 @@ function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roo
 
 function renderLineItem(item,sid,grouped){const s=S.items[sid]||{checked:false,qty:'',year:'',notes:''};const cls=grouped?`item-card item-card-grouped ${s.checked?'checked':''}`:`item-card item-card-standalone ${s.checked?'checked':''}`;if(item.noAction)return`<div class="${cls}"><div class="nan-card"><div class="nan-inner" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><span class="nan-label ${s.checked?'on':''}">No action needed</span></div></div></div>`;
 const total=calcItem(item,s);const cost=getItemCost(item);const costStr='$'+cost.toLocaleString('en-US',{minimumFractionDigits:2})+' / '+item.unit + `<span class="edit-price-pen" style="opacity:0.45;margin-left:4px;display:inline-flex;align-items:center;vertical-align:middle;position:relative;top:-1px">${I.pen}</span>`;const over=isOverridden(item);const minApplied=s&&s.checked&&s.qty&&(parseFloat(s.qty)*cost<total);const meta=item.min?`min $${item.min.toLocaleString()}${minApplied?' (min. applied)':''}`:'';const photos=S.photos[sid]||[];const memos=S.voiceMemos[sid]||[];const recording=isRecording(sid);
-return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="voice-memo"><audio controls src="${m.dataUrl}"></audio><button class="voice-del" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
+return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="custom-audio-player" data-src="${m.dataUrl}"><button class="audio-play-btn" data-action="audio-play-pause" type="button"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><div class="audio-progress-bar"><div class="audio-progress-fill" style="width:0%"></div></div><span class="audio-time">0:00</span><button class="voice-del-btn" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
 
 function renderBottomNav(){const first=S.currentCat===0;const last=S.currentCat===CATEGORIES.length-1;return`<div class="bottom-nav pb-safe"><div class="bottom-nav-inner"><button class="nav-btn nav-btn-secondary" data-action="prev-cat" ${first?'disabled':''}>← Previous</button>${!last?'<button class="nav-btn nav-btn-primary" data-action="next-cat">Next →</button><button class="nav-btn nav-btn-secondary" data-action="show-summary">View Summary</button>':'<button class="nav-btn nav-btn-primary" data-action="show-summary">View Summary</button>'}</div></div>`}
 
@@ -1303,7 +1384,7 @@ function compressImage(file,maxDim=1200,quality=0.78){return new Promise(ok=>{co
 // ============================================================
 // EXCEL + ZIP EXPORT
 // ============================================================
-async function exportPackage(){if(typeof XLSX==='undefined'||typeof JSZip==='undefined'){showToast('Export libraries not loaded');return}showToast('Building export files...');const wb=XLSX.utils.book_new();const ws={};let row=0;const merges=[];const colWidths=[38,16,12,10,14];const thinBorder=col=>({top:{style:'thin',color:{rgb:col}},bottom:{style:'thin',color:{rgb:col}},left:{style:'thin',color:{rgb:col}},right:{style:'thin',color:{rgb:col}}});const sty=(font,fill,align,border)=>({font:{name:'Calibri',...font},fill:fill?{patternType:'solid',fgColor:{rgb:fill}}:undefined,alignment:{wrapText:false,...align},border:border||undefined});const cell=(r,c,v,style,f)=>{const addr=XLSX.utils.encode_cell({r,c});ws[addr]={v,t:typeof v==='number'?'n':'s',s:style};if(f)ws[addr].z=f};const merge=(r,c1,c2)=>merges.push({s:{r,c:c1},e:{r,c:c2}});
+async function exportPackage(){if(typeof XLSX==='undefined'||typeof JSZip==='undefined'){showToast('Export libraries not loaded');return}const wb=XLSX.utils.book_new();const ws={};let row=0;const merges=[];const colWidths=[38,16,12,10,14];const thinBorder=col=>({top:{style:'thin',color:{rgb:col}},bottom:{style:'thin',color:{rgb:col}},left:{style:'thin',color:{rgb:col}},right:{style:'thin',color:{rgb:col}}});const sty=(font,fill,align,border)=>({font:{name:'Calibri',...font},fill:fill?{patternType:'solid',fgColor:{rgb:fill}}:undefined,alignment:{wrapText:false,...align},border:border||undefined});const cell=(r,c,v,style,f)=>{const addr=XLSX.utils.encode_cell({r,c});ws[addr]={v,t:typeof v==='number'?'n':'s',s:style};if(f)ws[addr].z=f};const merge=(r,c1,c2)=>merges.push({s:{r,c:c1},e:{r,c:c2}});
 const companyStr=S.companyName?S.companyName:'SPARKGROUP';
 cell(row,0,`${companyStr.toUpperCase()} \u2014 REPAIR ESTIMATE`,sty({bold:true,sz:14,color:{rgb:'FFFFFF'}},'111827',{horizontal:'center',vertical:'center'}));merge(row,0,4);row++;
 const pr=S.property;const propLine=[pr.beds?pr.beds+'bd':'',pr.baths?pr.baths+'ba':'',pr.sqft?pr.sqft+'sf':'',pr.yearBuilt?'Built '+pr.yearBuilt:''].filter(Boolean).join(' · ');
@@ -1314,8 +1395,8 @@ CATEGORIES.forEach(cat=>{if(cat.multiRoom)(S.rooms[cat.id]?.instances||[]).forEa
 const grand=calcTotal();cell(row,0,'TOTAL ESTIMATE',sty({bold:true,sz:13,color:{rgb:'FFFFFF'}},'111827',{horizontal:'center',vertical:'center'}));merge(row,0,3);for(let c=1;c<4;c++)cell(row,c,'',sty({},'111827'));cell(row,4,grand,sty({bold:true,sz:13,color:{rgb:'FFFFFF'}},'111827',{horizontal:'right',vertical:'center'}),'"$"#,##0');
 ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:row,c:4}});ws['!cols']=colWidths.map(w=>({wch:w}));ws['!merges']=merges;ws['!rows']=Array.from({length:row+1},(_,i)=>({hpt:i===0?24:i===1?16:18}));XLSX.utils.book_append_sheet(wb,ws,'Estimate');
 const baseName=`Repair-Estimate-${S.currentProjectName.replace(/[^a-z0-9]/gi,'_')}-${new Date().toISOString().split('T')[0]}`;const photoEntries=Object.entries(S.photos||{}).filter(([,arr])=>arr?.length>0);
-if(!photoEntries.length){XLSX.writeFile(wb,`${baseName}.xlsx`);showToast('Excel file exported');return}
-const zip=new JSZip();zip.file(`${baseName}.xlsx`,XLSX.write(wb,{bookType:'xlsx',type:'array'}));const folder=zip.folder('photos');photoEntries.forEach(([sid,photos])=>{const def=findItemDef(sid);const prefix=(def?.name||sid).replace(/[^a-z0-9]/gi,'_');photos.forEach((ph,i)=>{const ext=(ph.dataUrl.split(';')[0].split('/')[1]||'jpg').replace('jpeg','jpg');folder.file(`${prefix}_${i+1}.${ext}`,ph.dataUrl.split(',')[1],{base64:true})})});const blob=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${baseName}.zip`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);showToast('ZIP folder with photos exported')}
+if(!photoEntries.length){XLSX.writeFile(wb,`${baseName}.xlsx`);return}
+const zip=new JSZip();zip.file(`${baseName}.xlsx`,XLSX.write(wb,{bookType:'xlsx',type:'array'}));const folder=zip.folder('photos');photoEntries.forEach(([sid,photos])=>{const def=findItemDef(sid);const prefix=(def?.name||sid).replace(/[^a-z0-9]/gi,'_');photos.forEach((ph,i)=>{const ext=(ph.dataUrl.split(';')[0].split('/')[1]||'jpg').replace('jpeg','jpg');folder.file(`${prefix}_${i+1}.${ext}`,ph.dataUrl.split(',')[1],{base64:true})})});const blob=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${baseName}.zip`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);/* ZIP exported silently */}
 
 // ============================================================
 // DEAL ANALYZER + SVG CHART
@@ -1429,7 +1510,66 @@ const hdr=document.getElementById('running-total');if(hdr){const newT=calcTotal(
 // ============================================================
 // EVENT HANDLERS
 // ============================================================
-document.body.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;
+document.body.addEventListener('click',async e=>{
+  // Custom Audio Player click handling
+  const playBtn = e.target.closest('[data-action="audio-play-pause"]');
+  if (playBtn) {
+    const player = playBtn.closest('.custom-audio-player');
+    const src = player.dataset.src;
+    let audio = player._audio;
+    const playSvg = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    const pauseSvg = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+    document.querySelectorAll('.custom-audio-player').forEach(other => {
+      if (other !== player && other._audio && !other._audio.paused) {
+        other._audio.pause();
+        const otherBtn = other.querySelector('[data-action="audio-play-pause"]');
+        if (otherBtn) otherBtn.innerHTML = playSvg;
+      }
+    });
+    if (!audio) {
+      audio = new Audio(src);
+      player._audio = audio;
+      audio.addEventListener('timeupdate', () => {
+        const fill = player.querySelector('.audio-progress-fill');
+        const timeText = player.querySelector('.audio-time');
+        const pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
+        if (fill) fill.style.width = pct + '%';
+        const curM = Math.floor(audio.currentTime / 60);
+        const curS = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+        if (timeText) timeText.textContent = `${curM}:${curS}`;
+      });
+      audio.addEventListener('ended', () => {
+        playBtn.innerHTML = playSvg;
+        const fill = player.querySelector('.audio-progress-fill');
+        if (fill) fill.style.width = '0%';
+        const timeText = player.querySelector('.audio-time');
+        if (timeText) timeText.textContent = '0:00';
+      });
+    }
+    if (audio.paused) {
+      audio.play().then(() => {
+        playBtn.innerHTML = pauseSvg;
+      }).catch(err => console.error("Audio playback error:", err));
+    } else {
+      audio.pause();
+      playBtn.innerHTML = playSvg;
+    }
+    return;
+  }
+  const bar = e.target.closest('.audio-progress-bar');
+  if (bar) {
+    const player = bar.closest('.custom-audio-player');
+    const audio = player._audio;
+    if (audio && audio.duration) {
+      const rect = bar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+      audio.currentTime = pct * audio.duration;
+    }
+    return;
+  }
+
+  const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;
 if(action==='open-panel'){openPanel();return}
 if(action==='replay-tour'){replayTour();return}
 if(action==='export'){exportPackage();return}
@@ -1441,12 +1581,23 @@ if(action==='redo'){doRedo();return}
 if(action==='open-calc'){openCalc();return}
 if(action==='share-email'){shareEmail();return}
 if(action==='share-estimate'){shareEstimate();return}
-if(action==='print-pdf'){closePanel();S.showSummary=true;render();setTimeout(()=>window.print(),100);return}
+if(action==='print-pdf'){
+  const prevSummary = S.showSummary;
+  S.showSummary = true;
+  render();
+  closePanel();
+  setTimeout(() => {
+    window.print();
+    S.showSummary = prevSummary;
+    render();
+  }, 100);
+  return;
+}
 if(action==='toggle-prop'){S.propOpen=!S.propOpen;render();return}
 if(action==='toggle-item'){pushUndo();const id=btn.dataset.id;const s=S.items[id];s.checked=!s.checked;if(!s.checked){s.qty='';s.notes=''}syncNoActionNeeded(id, s.checked);if(navigator.vibrate)navigator.vibrate(10);confettiFired=false;saveCurrentState();render();if(s.checked)setTimeout(()=>document.querySelector(`[data-action="update-qty"][data-id="${CSS.escape(id)}"]`)?.focus(),50);return}
-if(action==='switch-cat'){S.currentCat=parseInt(btn.dataset.index);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
-if(action==='prev-cat'){S.currentCat=Math.max(0,S.currentCat-1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
-if(action==='next-cat'){S.currentCat=Math.min(CATEGORIES.length-1,S.currentCat+1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
+if(action==='switch-cat'){S.expandedGroups=[];S.currentCat=parseInt(btn.dataset.index);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
+if(action==='prev-cat'){S.expandedGroups=[];S.currentCat=Math.max(0,S.currentCat-1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
+if(action==='next-cat'){S.expandedGroups=[];S.currentCat=Math.min(CATEGORIES.length-1,S.currentCat+1);render();document.getElementById('scroll-area')?.scrollTo(0,0);return}
 if(action==='toggle-group'){const gid=btn.dataset.gid;const scr=document.getElementById('scroll-area');const st=scr?scr.scrollTop:0;const idx=S.expandedGroups.indexOf(gid);if(idx>=0)S.expandedGroups.splice(idx,1);else S.expandedGroups.push(gid);render();if(scr)requestAnimationFrame(()=>document.getElementById('scroll-area')?.scrollTo(0,st));return}
 if(action==='add-custom-item'){
   const gid = btn.dataset.gid;
