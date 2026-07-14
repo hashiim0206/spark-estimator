@@ -26,7 +26,7 @@ The following client-side libraries are loaded via CDN:
 ## How to Run
 
 **Option 1 — Live App (no setup required):**
-Visit [spark-estimator.kappa.vercel.app](https://spark-estimator.kappa.vercel.app) directly in any browser on any device.
+Visit [spark-estimator-kappa.vercel.app](https://spark-estimator-kappa.vercel.app) directly in any browser on any device.
 
 **Option 2 — Run Locally:**
 Double-click `index.html` to open it directly in any web browser. No build tools, servers, or dependencies required.
