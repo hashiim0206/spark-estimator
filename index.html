@@ -1936,12 +1936,12 @@ function toggleSidebarSection(sectionId, isPopstate) {
 function applySidebarSectionsState() {
   const defaults = {
     profile: false,
-    projects: true,
-    tools: true,
-    export: true,
-    pricing: true,
-    preferences: true,
-    help: true
+    projects: false,
+    tools: false,
+    export: false,
+    pricing: false,
+    preferences: false,
+    help: false
   };
   const state = getAccordionState();
   const merged = { ...defaults, ...state };
