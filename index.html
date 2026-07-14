@@ -1287,7 +1287,27 @@ document.getElementById('search-close-btn').addEventListener('click',closeSearch
 // VOICE MEMOS (MediaRecorder API)
 // ============================================================
 let mediaRec=null,recChunks=[],recItemId=null;
-async function startVoiceRec(itemId){try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});const opts={};if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';mediaRec=new MediaRecorder(stream,opts);recChunks=[];recItemId=itemId;const mime=mediaRec.mimeType||'audio/webm';mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};mediaRec.onstop=()=>{const blob=new Blob(recChunks,{type:mime});const reader=new FileReader();reader.onload=()=>{if(!S.voiceMemos[recItemId])S.voiceMemos[recItemId]=[];S.voiceMemos[recItemId].push({dataUrl:reader.result,ts:Date.now()});scheduleSave();render();showToast('Voice memo saved');mediaRec=null;};reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop())};mediaRec.start();render();showToast('Recording audio...')}catch{showToast('Microphone access denied')}}
+async function startVoiceRec(itemId){try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});const opts={};if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';mediaRec=new MediaRecorder(stream,opts);recChunks=[];recItemId=itemId;const mime=mediaRec.mimeType||'audio/webm';mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};mediaRec.onstop=()=>{const blob=new Blob(recChunks,{type:mime});const reader=new FileReader();reader.onload=()=>{
+      const dataUrl = reader.result;
+      const audio = new Audio(dataUrl);
+      audio.addEventListener('loadedmetadata', () => {
+        const dur = audio.duration;
+        if(!S.voiceMemos[recItemId])S.voiceMemos[recItemId]=[];
+        S.voiceMemos[recItemId].push({dataUrl, ts:Date.now(), duration: dur});
+        scheduleSave();
+        render();
+        showToast('Voice memo saved');
+        mediaRec=null;
+      });
+      audio.addEventListener('error', () => {
+        if(!S.voiceMemos[recItemId])S.voiceMemos[recItemId]=[];
+        S.voiceMemos[recItemId].push({dataUrl, ts:Date.now(), duration: 0});
+        scheduleSave();
+        render();
+        showToast('Voice memo saved');
+        mediaRec=null;
+      });
+    };reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop())};mediaRec.start();render();showToast('Recording audio...')}catch{showToast('Microphone access denied')}}
 function stopVoiceRec(){if(mediaRec&&mediaRec.state==='recording'){mediaRec.stop()}}
 function isRecording(itemId){return mediaRec&&mediaRec.state==='recording'&&recItemId===itemId}
 
@@ -1309,9 +1329,50 @@ function render(){const newTotal=calcTotal();document.getElementById('app').inne
 // Animated counter
 const hdr=document.getElementById('running-total');if(hdr&&S.prevTotal!==newTotal){animateCounter(hdr,S.prevTotal,newTotal)}S.prevTotal=newTotal;
 // Confetti check
-const p=calcProgress();if(p.pct===100&&!confettiFired&&p.checked>3){confettiFired=true;setTimeout(launchConfetti,300);showToast('100% walkthrough complete!')}}
+const p=calcProgress();if(p.pct===100&&!confettiFired&&p.checked>3){confettiFired=true;setTimeout(launchConfetti,300);showToast('100% walkthrough complete!')}
+  loadMissingAudioDurations();
+}
 
 function renderMain(){return`<div style="min-height:100vh;display:flex;flex-direction:column">${renderHeader()}${renderSectionTabs()}<div class="content-area scroll-y" id="scroll-area">${renderPropertyCard()}${renderCategoryView()}</div>${renderBottomNav()}<button class="deal-fab" data-action="open-deal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;position:relative;top:-1px"><rect x="18" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="2" y="13" width="4" height="8" rx="1"/></svg>Analyze Deal</button></div>`}
+
+function loadMissingAudioDurations() {
+  document.querySelectorAll('.custom-audio-player').forEach(player => {
+    const timeText = player.querySelector('.audio-time');
+    if (timeText && timeText.textContent === '0:00') {
+      const src = player.dataset.src;
+      if (src) {
+        const audio = new Audio(src);
+        audio.addEventListener('loadedmetadata', () => {
+          const dur = audio.duration;
+          if (isFinite(dur)) {
+            const m = Math.floor(dur / 60);
+            const s = Math.floor(dur % 60).toString().padStart(2, '0');
+            timeText.textContent = `${m}:${s}`;
+            
+            // Also save back to state if possible
+            const delBtn = player.querySelector('.voice-del-btn');
+            if (delBtn) {
+              const sid = delBtn.dataset.id;
+              const idx = parseInt(delBtn.dataset.index);
+              if (sid && !isNaN(idx) && S.voiceMemos[sid] && S.voiceMemos[sid][idx]) {
+                S.voiceMemos[sid][idx].duration = dur;
+                dbSaveProject({
+                  id: S.currentProjectId,
+                  name: S.currentProjectName,
+                  items: S.items,
+                  photos: S.photos,
+                  voiceMemos: S.voiceMemos,
+                  property: S.property,
+                  dealAnalyzer: S.dealAnalyzer
+                });
+              }
+            }
+          }
+        });
+      }
+    }
+  });
+}
 
 function renderHeader(){const total=calcTotal();const p=calcProgress();const active=CATEGORIES.filter(c=>calcCatTotal(c)>0).length;const gt=calcTotal()||1;
 const segs=CATEGORIES.map((cat,i)=>{const ct=calcCatTotal(cat);return{pct:ct/gt*100,color:CAT_COLORS[i],name:cat.name.split('/')[0].split('&')[0].trim(),total:ct}}).filter(s=>s.total>0);
@@ -1378,7 +1439,7 @@ function renderGroup(slot,idx){const{gid,label,entries,roomId}=slot;const ek=roo
 
 function renderLineItem(item,sid,grouped){const s=S.items[sid]||{checked:false,qty:'',year:'',notes:''};const cls=grouped?`item-card item-card-grouped ${s.checked?'checked':''}`:`item-card item-card-standalone ${s.checked?'checked':''}`;if(item.noAction)return`<div class="${cls}"><div class="nan-card"><div class="nan-inner" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><span class="nan-label ${s.checked?'on':''}">No action needed</span></div></div></div>`;
 const total=calcItem(item,s);const cost=getItemCost(item);const costStr='$'+cost.toLocaleString('en-US',{minimumFractionDigits:2})+' / '+item.unit + `<span class="edit-price-pen" style="opacity:0.45;margin-left:4px;display:inline-flex;align-items:center;vertical-align:middle;position:relative;top:-1px">${I.pen}</span>`;const over=isOverridden(item);const minApplied=s&&s.checked&&s.qty&&(parseFloat(s.qty)*cost<total);const meta=item.min?`min $${item.min.toLocaleString()}${minApplied?' (min. applied)':''}`:'';const photos=S.photos[sid]||[];const memos=S.voiceMemos[sid]||[];const recording=isRecording(sid);
-return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="custom-audio-player" data-src="${m.dataUrl}"><button class="audio-play-btn" data-action="audio-play-pause" type="button"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><div class="audio-progress-bar"><div class="audio-progress-fill" style="width:0%"></div></div><span class="audio-time">0:00</span><button class="voice-del-btn" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
+return`<div class="${cls}" data-item-card><div class="item-inner"><div class="item-top" data-action="toggle-item" data-id="${sid}" style="cursor:pointer"><button class="item-toggle ${s.checked?'on':''}" style="pointer-events:none">${I.chk}</button><div class="item-body"><div class="item-title-row"><span class="item-name ${s.checked?'active':'inactive'}">${item.name}</span><div style="display:flex;align-items:center;gap:8px"><span class="item-line-total" style="color:${total>0?'var(--spark)':'var(--border)'}" data-line-total>${total>0?fmt(total):'\u2014'}</span><button class="item-delete-btn" data-action="delete-item" data-id="${item.id}" data-sid="${sid}" title="Delete Item" style="padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer">${I.del}</button></div></div><div class="item-cost-label clickable" data-action="override-price" data-id="${item.id}" title="Click to customize price">${costStr}${meta?' · '+meta:''}${over?'<span class="price-override-badge">CUSTOM</span>':''}</div></div></div>${s.checked?`<div style="padding-left:40px"><div class="item-inputs"><div class="input-group"><span class="input-label">Qty</span><input class="qty-input" type="number" data-action="update-qty" data-id="${sid}" value="${s.qty}" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit-label">${item.unit}</span></div>${item.hasYear?`<div class="input-group"><span class="input-label">Year</span><input class="year-input" type="number" data-action="update-year" data-id="${sid}" value="${s.year||''}" min="1970" max="${new Date().getFullYear()}" inputmode="numeric" placeholder="e.g. 2015" /></div>`:''}</div><div class="item-notes-wrap"><textarea class="notes-input" data-action="update-notes" data-id="${sid}" placeholder="Add notes..." rows="1">${s.notes||''}</textarea></div><div class="media-section"><div class="media-row"><span class="media-label">Photos & Voice</span></div><div class="photo-grid">${photos.map((ph,pi)=>`<div class="photo-thumb-wrap"><img src="${ph.dataUrl}" class="photo-thumb" /><button class="photo-remove" data-action="remove-photo" data-id="${sid}" data-index="${pi}">&times;</button></div>`).join('')}<button class="photo-add-btn" data-action="add-photo" data-id="${sid}">${I.cam}<span>Photo</span></button><button class="voice-add-btn ${recording?'recording':''}" data-action="toggle-voice" data-id="${sid}">${I.mic}<span>${recording?'Stop':'Voice'}</span></button></div>${memos.length?`<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${memos.map((m,mi)=>`<div class="custom-audio-player" data-src="${m.dataUrl}"><button class="audio-play-btn" data-action="audio-play-pause" type="button"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><div class="audio-progress-bar"><div class="audio-progress-fill" style="width:0%"></div></div><span class="audio-time">${(m.duration && isFinite(m.duration)) ? (Math.floor(m.duration/60) + ':' + Math.floor(m.duration%60).toString().padStart(2, '0')) : '0:00'}</span><button class="voice-del-btn" data-action="remove-voice" data-id="${sid}" data-index="${mi}">&times;</button></div>`).join('')}</div>`:''}</div></div>`:''}</div></div>`}
 
 function renderBottomNav(){const first=S.currentCat===0;const last=S.currentCat===CATEGORIES.length-1;return`<div class="bottom-nav pb-safe"><div class="bottom-nav-inner"><button class="nav-btn nav-btn-secondary" data-action="prev-cat" ${first?'disabled':''}>← Previous</button>${!last?'<button class="nav-btn nav-btn-primary" data-action="next-cat">Next →</button><button class="nav-btn nav-btn-secondary" data-action="show-summary">View Summary</button>':'<button class="nav-btn nav-btn-primary" data-action="show-summary">View Summary</button>'}</div></div>`}
 
