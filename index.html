@@ -531,7 +531,7 @@ input,textarea,select{font:inherit}
     
     <!-- 1. Report Profile -->
     <div class="panel-section" id="section-profile">
-      <div class="panel-section-header" onclick="toggleSidebarSection('profile')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('profile')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           Report Profile
@@ -560,7 +560,7 @@ input,textarea,select{font:inherit}
 
     <!-- 2. Your Projects -->
     <div class="panel-section" id="section-projects">
-      <div class="panel-section-header" onclick="toggleSidebarSection('projects')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('projects')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
           Your Projects
@@ -574,7 +574,7 @@ input,textarea,select{font:inherit}
 
     <!-- 3. Tools -->
     <div class="panel-section" id="section-tools">
-      <div class="panel-section-header" onclick="toggleSidebarSection('tools')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('tools')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
           Tools
@@ -598,7 +598,7 @@ input,textarea,select{font:inherit}
 
     <!-- 4. Export & Reports -->
     <div class="panel-section" id="section-export">
-      <div class="panel-section-header" onclick="toggleSidebarSection('export')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('export')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
           Export & Reports
@@ -619,7 +619,7 @@ input,textarea,select{font:inherit}
 
     <!-- 5. Pricing -->
     <div class="panel-section" id="section-pricing">
-      <div class="panel-section-header" onclick="toggleSidebarSection('pricing')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('pricing')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
           Pricing
@@ -643,7 +643,7 @@ input,textarea,select{font:inherit}
 
     <!-- 6. Preferences -->
     <div class="panel-section" id="section-preferences">
-      <div class="panel-section-header" onclick="toggleSidebarSection('preferences')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('preferences')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
           Preferences
@@ -672,7 +672,7 @@ input,textarea,select{font:inherit}
 
     <!-- 7. Help -->
     <div class="panel-section" id="section-help" style="border-bottom:none">
-      <div class="panel-section-header" onclick="toggleSidebarSection('help')">
+      <div class="panel-section-header" onclick="event.stopPropagation(); toggleSidebarSection('help')">
         <div class="panel-section-title">
           <span class="panel-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
           Help
@@ -691,6 +691,19 @@ input,textarea,select{font:inherit}
   </div>
   <div class="panel-footer pb-safe">
     <button id="panel-new-btn" class="panel-new-btn">+ New Project</button>
+  </div>
+</div>
+
+<!-- PHOTO SOURCE CHOICE MODAL -->
+<div id="photo-source-modal" class="modal-overlay">
+  <div id="photo-source-bg" class="modal-bg"></div>
+  <div class="modal-box" style="max-width:320px;text-align:center;padding:24px">
+    <div class="modal-title" style="margin-bottom:20px;font-size:16px;font-weight:700">Add Photo</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button id="photo-take-btn" class="modal-btn-confirm" style="width:100%;padding:12px 16px;border-radius:var(--radius-md);font-size:14px;border:none">Take Photo (Camera)</button>
+      <button id="photo-gallery-btn" class="panel-tool-btn" style="width:100%;padding:12px 16px;border-radius:var(--radius-md);justify-content:center;font-size:14px">Choose from Gallery</button>
+      <button id="photo-source-cancel" class="panel-tool-btn" style="width:100%;padding:12px 16px;border-radius:var(--radius-md);justify-content:center;margin-top:8px;border:none;color:var(--text-muted)">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -969,7 +982,7 @@ let pendingModal=null;
 function openModal(title,ph,val,cb){pushModalState('app-modal');document.getElementById('modal-select-wrap').style.display='none';pendingModal=cb;document.getElementById('modal-title').textContent=title;const inp=document.getElementById('modal-input');inp.placeholder=ph||'';inp.value=val||'';document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function openRoomModal(catId,cb){pushModalState('app-modal');const selectWrap=document.getElementById('modal-select-wrap');const select=document.getElementById('modal-select');const title=document.getElementById('modal-title');const inp=document.getElementById('modal-input');title.textContent='Add Room';inp.placeholder='e.g. Master Bedroom';if(catId==='interior'){selectWrap.style.display='block';select.innerHTML=`<option value="Bedroom">Bedroom</option><option value="Living/Common">Living/Common</option><option value="Interior/General">Interior/General</option>`;select.onchange=()=>{const type=select.value;const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type===type).length+1;inp.value=`${type} ${count}`};const rd=S.rooms[catId];const count=rd.instances.filter(i=>i.type==='Bedroom').length+1;inp.value=`Bedroom ${count}`}else{selectWrap.style.display='none';const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];inp.value=`${cat.name} ${rd.instances.length+1}`}pendingModal=name=>{const type=catId==='interior'?select.value:CATEGORIES.find(c=>c.id===catId).name;cb({name,type})};document.getElementById('app-modal').classList.add('open');setTimeout(()=>{inp.focus();inp.select()},80)}
 function confirmModal(){const v=document.getElementById('modal-input').value.trim();if(v&&pendingModal)pendingModal(v);closeModal()}
-function closeModal(isPopstate){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null;if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('app-modal')}
+function closeModal(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('app-modal').classList.remove('open');document.getElementById('modal-select-wrap').style.display='none';pendingModal=null;}else{history.back();}removeModalState('app-modal')}
 let customItemGid = null;
 let customItemRid = null;
 function openCustomItemModal(gid, rid) {
@@ -983,10 +996,14 @@ function openCustomItemModal(gid, rid) {
   setTimeout(() => document.getElementById('custom-item-name').focus(), 80);
 }
 function closeCustomItemModal(isPopstate) {
-  document.getElementById('custom-item-modal').classList.remove('open');
-  customItemGid = null;
-  customItemRid = null;
-  if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if(isPop){
+    document.getElementById('custom-item-modal').classList.remove('open');
+    customItemGid = null;
+    customItemRid = null;
+  }else{
+    history.back();
+  }
   removeModalState('custom-item');
 }
 function confirmCustomItem() {
@@ -1050,9 +1067,13 @@ function openPriceOverrideModal(itemId) {
   setTimeout(() => document.getElementById('pom-cost-input').focus(), 80);
 }
 function closePriceOverrideModal(isPopstate) {
-  document.getElementById('price-override-modal').classList.remove('open');
-  overrideItemId = null;
-  if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  if(isPop){
+    document.getElementById('price-override-modal').classList.remove('open');
+    overrideItemId = null;
+  }else{
+    history.back();
+  }
   removeModalState('price-override');
 }
 async function confirmPriceOverride() {
@@ -1091,7 +1112,7 @@ async function resetPriceOverride() {
   showToast('Price reset to default');
 }
 function openPresetModal(){pushModalState('presets');document.getElementById('preset-modal').classList.add('open')}
-function closePresetModal(isPopstate){document.getElementById('preset-modal').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('presets')}
+function closePresetModal(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('preset-modal').classList.remove('open');}else{history.back();}removeModalState('presets')}
 
 // ============================================================
 // PANEL
@@ -1110,7 +1131,7 @@ async function refreshPanelList(){const list=await dbGetProjects();const el=docu
 // SEARCH ENGINE
 // ============================================================
 function openSearch(){pushModalState('search');document.getElementById('search-overlay').classList.add('open');const inp=document.getElementById('search-input');inp.value='';inp.focus();renderSearchResults('')}
-function closeSearch(isPopstate){document.getElementById('search-overlay').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('search')}
+function closeSearch(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('search-overlay').classList.remove('open');}else{history.back();}removeModalState('search')}
 function performSearch(q){if(!q.trim())return[];const lq=q.trim().toLowerCase();const results=[];CATEGORIES.forEach((cat,ci)=>{const matches=[];cat.items.forEach(it=>{if(it.noAction)return;const nameLower=it.name.toLowerCase();const words=nameLower.split(/[^a-z0-9]+/);const match=nameLower.startsWith(lq)||words.some(w=>w.startsWith(lq))||(lq.includes(' ')&&nameLower.includes(lq));if(match){const sid=cat.multiRoom?`${(S.rooms[cat.id]?.instances[S.rooms[cat.id]?.current||0])?.id||''}:${it.id}`:it.id;matches.push({item:it,catIndex:ci,stateId:sid,checked:S.items[sid]?.checked})}});if(matches.length)results.push({catName:cat.name,color:CAT_COLORS[ci],matches})});return results}
 function renderSearchResults(q){const el=document.getElementById('search-results');if(!q.trim()){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">🔍</div><p style="font-size:15px;font-weight:600">Search all repair items</p><p style="font-size:12px;margin-top:4px">Type to filter across all ${CATEGORIES.flatMap(c=>c.items).filter(i=>!i.noAction).length} items</p></div>`;return}const groups=performSearch(q);if(!groups.length){el.innerHTML=`<div class="search-empty"><div class="search-empty-icon">😕</div><p style="font-size:15px;font-weight:600">No results for "${q}"</p></div>`;return}el.innerHTML=groups.map(g=>`<div class="search-cat-label" style="color:${g.color}">${g.catName}</div>${g.matches.map(m=>`<button class="search-result-item" data-action="search-go" data-cat="${m.catIndex}" data-sid="${m.stateId}"><div><div class="search-result-name">${highlightMatch(m.item.name,q)}</div><div class="search-result-cost">$${getItemCost(m.item).toLocaleString('en-US',{minimumFractionDigits:2})} / ${m.item.unit}</div></div>${m.checked?'<span class="search-result-check">✓ Selected</span>':''}</button>`).join('')}`).join('')}
 function highlightMatch(text,q){const idx=text.toLowerCase().indexOf(q.toLowerCase());if(idx<0)return text;return text.slice(0,idx)+`<mark style="background:rgba(232,98,28,0.2);color:var(--spark-dark);border-radius:2px;padding:0 1px">${text.slice(idx,idx+q.length)}</mark>`+text.slice(idx+q.length)}
@@ -1121,8 +1142,8 @@ document.getElementById('search-close-btn').addEventListener('click',closeSearch
 // VOICE MEMOS (MediaRecorder API)
 // ============================================================
 let mediaRec=null,recChunks=[],recItemId=null;
-async function startVoiceRec(itemId){try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});const opts={};if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';mediaRec=new MediaRecorder(stream,opts);recChunks=[];recItemId=itemId;mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};mediaRec.onstop=()=>{const blob=new Blob(recChunks,{type:mediaRec.mimeType||'audio/webm'});const reader=new FileReader();reader.onload=()=>{if(!S.voiceMemos[recItemId])S.voiceMemos[recItemId]=[];S.voiceMemos[recItemId].push({dataUrl:reader.result,ts:Date.now()});scheduleSave();render();showToast('Voice memo saved')};reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop())};mediaRec.start();render();showToast('Recording audio...')}catch{showToast('Microphone access denied')}}
-function stopVoiceRec(){if(mediaRec&&mediaRec.state==='recording'){mediaRec.stop();mediaRec=null}}
+async function startVoiceRec(itemId){try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});const opts={};if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';mediaRec=new MediaRecorder(stream,opts);recChunks=[];recItemId=itemId;const mime=mediaRec.mimeType||'audio/webm';mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};mediaRec.onstop=()=>{const blob=new Blob(recChunks,{type:mime});const reader=new FileReader();reader.onload=()=>{if(!S.voiceMemos[recItemId])S.voiceMemos[recItemId]=[];S.voiceMemos[recItemId].push({dataUrl:reader.result,ts:Date.now()});scheduleSave();render();showToast('Voice memo saved');mediaRec=null;};reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop())};mediaRec.start();render();showToast('Recording audio...')}catch{showToast('Microphone access denied')}}
+function stopVoiceRec(){if(mediaRec&&mediaRec.state==='recording'){mediaRec.stop()}}
 function isRecording(itemId){return mediaRec&&mediaRec.state==='recording'&&recItemId===itemId}
 
 // ============================================================
@@ -1252,7 +1273,7 @@ const zip=new JSZip();zip.file(`${baseName}.xlsx`,XLSX.write(wb,{bookType:'xlsx'
 // DEAL ANALYZER + SVG CHART
 // ============================================================
 function openDealAnalyzer(){pushModalState('deal');renderDealBody();document.getElementById('deal-sheet').classList.add('open')}
-function closeDealAnalyzer(isPopstate){document.getElementById('deal-sheet').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('deal')}
+function closeDealAnalyzer(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){const el=document.getElementById('deal-sheet');if(el)el.classList.remove('open');}else{history.back();}removeModalState('deal')}
 function calcDeal(){const arv=parseFloat(S.dealAnalyzer.arv)||0;const purchase=parseFloat(S.dealAnalyzer.purchasePrice)||0;const repairs=calcTotal();const closingCosts=arv*(S.dealAnalyzer.closingPct/100);const holdingCosts=S.dealAnalyzer.holdingMonths*S.dealAnalyzer.monthlyHolding;const financing=purchase*(S.dealAnalyzer.financingRate/100)*(S.dealAnalyzer.holdingMonths/12);const contingency=repairs*(S.dealAnalyzer.contingencyPct/100);const totalCosts=repairs+closingCosts+holdingCosts+financing+contingency;const totalInvestment=purchase+totalCosts;const profit=arv-totalInvestment;const roi=totalInvestment>0?(profit/totalInvestment*100):0;const margin=arv>0?(profit/arv*100):0;const rule70=purchase+repairs;const rule70Limit=arv*0.7;const rule70Pass=rule70<=rule70Limit;let verdictText='Walk Away',verdictClass='bad';if(arv>0){if(margin>=20){verdictText='Strong Deal';verdictClass='good'}else if(margin>=10){verdictText='Thin Margins';verdictClass='mid'}}return{arv,purchase,repairs,closingCosts,holdingCosts,financing,contingency,totalCosts,totalInvestment,profit,roi,margin,rule70,rule70Limit,rule70Pass,verdictText,verdictClass}}
 function renderDealOutput(){const r=calcDeal();const C=157.08;const si=r.totalInvestment||1;const pS=(r.purchase/si)*C;const rS=(r.repairs/si)*C;const sS=((r.totalCosts-r.repairs)/si)*C;
 return`${r.arv>0&&r.purchase>0?`<div class="deal-chart-container"><svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)"><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--border-light)" stroke-width="50"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--blue)" stroke-width="50" stroke-dasharray="${pS} ${C}" stroke-dashoffset="0"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--spark)" stroke-width="50" stroke-dasharray="${rS} ${C}" stroke-dashoffset="${-pS}"/><circle cx="60" cy="60" r="25" fill="transparent" stroke="var(--purple)" stroke-width="50" stroke-dasharray="${sS} ${C}" stroke-dashoffset="${-(pS+rS)}"/><circle cx="60" cy="60" r="18" fill="var(--surface)"/><text x="60" y="58" class="deal-chart-text" transform="rotate(90 60 60)">TOTAL BUY-IN</text><text x="60" y="72" transform="rotate(90 60 60)" style="font-size:10px;font-weight:800;fill:var(--text);text-anchor:middle">${fmt(r.totalInvestment)}</text></svg></div><div style="display:flex;justify-content:center;gap:12px;font-size:10px;font-weight:700;margin-bottom:18px"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--blue);border-radius:2px"></span>Purchase</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--spark);border-radius:2px"></span>Repairs</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px"></span>Soft Costs</span></div>`:''}<div class="deal-input-group"><label class="deal-label">Repair Estimate (from walkthrough)</label><div style="padding:10px 12px;background:var(--border-light);border-radius:var(--radius-md);font-size:16px;font-weight:700;color:var(--spark)">${fmt(r.repairs)}</div></div>${r.arv>0&&r.purchase>0?`<div class="deal-results"><div class="deal-result-row"><span class="deal-result-label">Closing Costs</span><span class="deal-result-value">${fmt(r.closingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Holding Costs</span><span class="deal-result-value">${fmt(r.holdingCosts)}</span></div><div class="deal-result-row"><span class="deal-result-label">Financing</span><span class="deal-result-value">${fmt(r.financing)}</span></div><div class="deal-result-row"><span class="deal-result-label">Contingency</span><span class="deal-result-value">${fmt(r.contingency)}</span></div><div class="deal-result-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><span class="deal-result-label" style="font-weight:700">Total Investment</span><span class="deal-result-value" style="font-size:16px">${fmt(r.totalInvestment)}</span></div><div class="deal-result-row"><span class="deal-result-label" style="font-weight:700">Projected Profit</span><span class="deal-result-value" style="font-size:16px;color:${r.profit>=0?'var(--green)':'var(--red)'}">${fmt(r.profit)}</span></div><div class="deal-result-row"><span class="deal-result-label">ROI</span><span class="deal-result-value">${r.roi.toFixed(1)}%</span></div><div class="deal-result-row"><span class="deal-result-label">Profit Margin</span><span class="deal-result-value">${r.margin.toFixed(1)}%</span></div></div><div class="deal-verdict ${r.verdictClass}">${r.verdictText}</div>`:'<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">Enter ARV and Purchase Price to see analysis</div>'}`}
@@ -1356,11 +1377,11 @@ if(action==='open-panel'){openPanel();return}
 if(action==='replay-tour'){replayTour();return}
 if(action==='export'){exportPackage();return}
 if(action==='open-deal'){openDealAnalyzer();return}
-if(action==='open-presets'){closePanel();openPresetModal();return}
-if(action==='open-search'){closePanel();openSearch();return}
+if(action==='open-presets'){openPresetModal();return}
+if(action==='open-search'){openSearch();return}
 if(action==='undo'){doUndo();return}
 if(action==='redo'){doRedo();return}
-if(action==='open-calc'){closePanel();openCalc();return}
+if(action==='open-calc'){openCalc();return}
 if(action==='share-email'){shareEmail();return}
 if(action==='share-estimate'){shareEstimate();return}
 if(action==='print-pdf'){closePanel();S.showSummary=true;render();setTimeout(()=>window.print(),100);return}
@@ -1405,7 +1426,7 @@ if(action==='rename-room'){const catId=btn.dataset.cat;const idx=parseInt(btn.da
 if(action==='add-room'){const catId=btn.dataset.cat;openRoomModal(catId,({name,type})=>{pushUndo();const cat=CATEGORIES.find(c=>c.id===catId);const rd=S.rooms[catId];const id=catId.charAt(0)+Date.now();rd.instances.push({id,name,type});cat.items.forEach(it=>{S.items[`${id}:${it.id}`]={checked:false,qty:'',year:'',notes:''}});rd.current=rd.instances.length-1;saveCurrentState();render();showToast(`Added ${name}`)});return}
 if(action==='remove-room'){const catId=btn.dataset.cat;const idx=parseInt(btn.dataset.index);const inst=S.rooms[catId].instances[idx];if(!confirm(`Remove "${inst.name}"?`))return;pushUndo();CATEGORIES.find(c=>c.id===catId).items.forEach(it=>{delete S.items[`${inst.id}:${it.id}`]});S.rooms[catId].instances.splice(idx,1);S.rooms[catId].current=Math.min(S.rooms[catId].current,S.rooms[catId].instances.length-1);saveCurrentState();render();showToast(`Removed ${inst.name}`);return}
 if(action==='rename-project'){openModal('Rename Project','e.g. 123 Main St',S.currentProjectName,name=>{S.currentProjectName=name;saveCurrentState();render()});return}
-if(action==='add-photo'){const id=btn.dataset.id;const input=document.createElement('input');input.type='file';input.accept='image/*';input.capture='environment';input.style.cssText='position:fixed;top:-999px;opacity:0';document.body.appendChild(input);input.onchange=async()=>{document.body.removeChild(input);if(!input.files?.length)return;if(!S.photos[id])S.photos[id]=[];for(const file of Array.from(input.files)){const dataUrl=await compressImage(file);S.photos[id].push({name:file.name,dataUrl})}saveCurrentState();render();showToast('📷 Photo added')};input.click();return}
+if(action==='add-photo'){const id=btn.dataset.id;openPhotoSourceModal(id);return}
 if(action==='remove-photo'){const id=btn.dataset.id;const idx=parseInt(btn.dataset.index);if(S.photos[id])S.photos[id].splice(idx,1);scheduleSave();render();return}
 if(action==='toggle-voice'){const id=btn.dataset.id;if(isRecording(id)){stopVoiceRec()}else{if(mediaRec&&mediaRec.state==='recording')stopVoiceRec();startVoiceRec(id)}return}
 if(action==='remove-voice'){const id=btn.dataset.id;const idx=parseInt(btn.dataset.index);if(S.voiceMemos[id])S.voiceMemos[id].splice(idx,1);scheduleSave();render();return}
@@ -1529,6 +1550,10 @@ document.getElementById('theme-dark-btn').addEventListener('click',()=>{document
 document.getElementById('clear-all-btn').addEventListener('click',()=>{const count=Object.values(S.items).filter(s=>s.checked).length;if(!count){showToast('No items to clear');return}if(!confirm(`Clear ${count} checked item${count!==1?'s':''}? This cannot be undone.`))return;initItems();S.photos={};S.voiceMemos={};confettiFired=false;saveCurrentState();closePanel();render();showToast(`Cleared ${count} items`)});
 document.getElementById('deal-bg').addEventListener('click',closeDealAnalyzer);
 document.getElementById('deal-close').addEventListener('click',closeDealAnalyzer);
+document.getElementById('photo-take-btn').addEventListener('click',()=>{closePhotoSourceModal();triggerPhotoInput(true)});
+document.getElementById('photo-gallery-btn').addEventListener('click',()=>{closePhotoSourceModal();triggerPhotoInput(false)});
+document.getElementById('photo-source-cancel').addEventListener('click',()=>closePhotoSourceModal());
+document.getElementById('photo-source-bg').addEventListener('click',()=>closePhotoSourceModal());
 
 // ============================================================
 // UNDO / REDO
@@ -1661,15 +1686,22 @@ let onboardStep=0;
 // ============================================================
 function toggleSidebarSection(sectionId, isPopstate) {
   const isPop = isPopstate === true;
-  const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
-  state[sectionId] = !state[sectionId];
-  localStorage.setItem('sparkPanelState', JSON.stringify(state));
-  applySidebarSectionsState();
-  if(state[sectionId]) {
-    pushModalState('section-' + sectionId);
-  } else {
-    removeModalState('section-' + sectionId);
-    if(!isPop && typeof history !== 'undefined' && history.back) history.back();
+  if(isPop){
+    const state = getAccordionState();
+    state[sectionId] = false;
+    setAccordionState(state);
+    applySidebarSectionsState();
+  }else{
+    const state = getAccordionState();
+    state[sectionId] = !state[sectionId];
+    setAccordionState(state);
+    applySidebarSectionsState();
+    if(state[sectionId]){
+      pushModalState('section-' + sectionId);
+    }else{
+      removeModalState('section-' + sectionId);
+      if(typeof history !== 'undefined' && history.back) history.back();
+    }
   }
 }
 
@@ -1683,7 +1715,7 @@ function applySidebarSectionsState() {
     preferences: true,
     help: true
   };
-  const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
+  const state = getAccordionState();
   const merged = { ...defaults, ...state };
   
   Object.keys(merged).forEach(id => {
@@ -1773,6 +1805,24 @@ function unlockBodyScroll() {
 }
 
 // ============================================================
+// ACCORDION STORAGE ABSTRACTION (sessionStorage)
+// ============================================================
+function getAccordionState() {
+  if (typeof sessionStorage === 'undefined') return {};
+  try {
+    return JSON.parse(sessionStorage.getItem('sparkPanelState') || '{}');
+  } catch {
+    return {};
+  }
+}
+function setAccordionState(state) {
+  if (typeof sessionStorage === 'undefined') return;
+  try {
+    sessionStorage.setItem('sparkPanelState', JSON.stringify(state));
+  } catch {}
+}
+
+// ============================================================
 // MODAL STACK & HISTORY ROUTING (BACK BUTTON)
 // ============================================================
 let openModalsStack = [];
@@ -1818,13 +1868,54 @@ function closeModalById(id, isPopstate) {
     closeSearch(isPopstate);
   } else if (id === 'app-modal') {
     closeModal(isPopstate);
+  } else if (id === 'photo-source') {
+    closePhotoSourceModal(isPopstate);
   } else if (id.startsWith('section-')) {
     const sectionId = id.substring(8);
-    const state = JSON.parse(localStorage.getItem('sparkPanelState') || '{}');
+    const state = getAccordionState();
     state[sectionId] = false;
-    localStorage.setItem('sparkPanelState', JSON.stringify(state));
+    setAccordionState(state);
     applySidebarSectionsState();
   }
+}
+
+let photoItemId = null;
+function openPhotoSourceModal(id) {
+  photoItemId = id;
+  pushModalState('photo-source');
+  document.getElementById('photo-source-modal').classList.add('open');
+}
+function closePhotoSourceModal(isPopstate) {
+  const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);
+  document.getElementById('photo-source-modal').classList.remove('open');
+  if (!isPop) history.back();
+  removeModalState('photo-source');
+}
+function triggerPhotoInput(useCamera) {
+  const id = photoItemId;
+  if (!id) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  if (useCamera) {
+    input.capture = 'environment';
+  }
+  input.style.cssText = 'position:fixed;top:-999px;opacity:0';
+  document.body.appendChild(input);
+  input.onchange = async () => {
+    document.body.removeChild(input);
+    if (!input.files?.length) return;
+    if (!S.photos[id]) S.photos[id] = [];
+    for (const file of Array.from(input.files)) {
+      const dataUrl = await compressImage(file);
+      S.photos[id].push({name: file.name, dataUrl});
+    }
+    saveCurrentState();
+    render();
+    showToast('📷 Photo added');
+  };
+  input.click();
 }
 
 function showOnboarding(){if(localStorage.getItem('sparkOnboardDone'))return;onboardStep=0;renderOnboardStep()}
@@ -1977,7 +2068,7 @@ function renderOnboardStep(){
 // ============================================================
 let calcExpr='';
 function openCalc(){pushModalState('calc');document.getElementById('calc-overlay').classList.add('open');calcExpr='';updateCalcDisplay()}
-function closeCalc(isPopstate){document.getElementById('calc-overlay').classList.remove('open');if(isPopstate !== true && typeof history !== 'undefined' && history.back)history.back();removeModalState('calc')}
+function closeCalc(isPopstate){const isPop = (isPopstate === true) || (typeof history === 'undefined' || !history.back);if(isPop){document.getElementById('calc-overlay').classList.remove('open');}else{history.back();}removeModalState('calc')}
 function updateCalcDisplay(){document.getElementById('calc-expr').textContent=calcExpr||'';let result='0';if(calcExpr){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))result=parseFloat(val.toFixed(4)).toLocaleString('en-US')}catch{}}document.getElementById('calc-result').textContent=result}
 function handleCalcBtn(v){if(v==='C'){calcExpr=''}else if(v==='='){try{const expr=calcExpr.replace(/×/g,'*').replace(/÷/g,'/');const val=Function('"use strict";return('+expr+')')();if(isFinite(val))calcExpr=String(parseFloat(val.toFixed(4)))}catch{}}else{calcExpr+=v}updateCalcDisplay()}
 document.getElementById('calc-overlay').addEventListener('click',e=>{const btn=e.target.closest('[data-calc]');if(btn)handleCalcBtn(btn.dataset.calc)});
@@ -2023,34 +2114,14 @@ window.runTests=runTests;
 // ============================================================
 // PWA
 // ============================================================
-(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v31';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
+(function(){if('serviceWorker' in navigator){try{const sw=`const CACHE='spark-v32';const CDN=['https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CDN)).catch(()=>{}));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{if(k!==CACHE)return caches.delete(k)}))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{})}return resp}).catch(()=>new Response('Offline',{status:503}))))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}catch{}}})();
 
 // ============================================================
 // BOOT
 // ============================================================
 (async function(){const theme=localStorage.getItem('sparkTheme');if(theme==='dark'||(!theme&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');
 S.globalPriceOverrides=await dbGetGlobalPrices();const list=await dbGetProjects();if(list.length>0)loadProjectIntoState(list[0]);else{S.currentProjectId=`proj_${Date.now()}`;S.currentProjectName='New Estimate';initItems();await saveCurrentState()}render();applySidebarSectionsState();showOnboarding();
-window.addEventListener('visibilitychange',()=>{
-  if(document.hidden){
-    saveCurrentState();
-    sessionStorage.setItem('sparkPanelResetAccordion', 'true');
-  } else {
-    if (sessionStorage.getItem('sparkPanelResetAccordion') === 'true') {
-      sessionStorage.removeItem('sparkPanelResetAccordion');
-      const defaults = {
-        profile: false,
-        projects: true,
-        tools: true,
-        export: true,
-        pricing: true,
-        preferences: true,
-        help: true
-      };
-      localStorage.setItem('sparkPanelState', JSON.stringify(defaults));
-      applySidebarSectionsState();
-    }
-  }
-});
+window.addEventListener('visibilitychange',()=>{if(document.hidden)saveCurrentState()});
 window.addEventListener('pagehide',saveCurrentState);
 window.addEventListener('freeze',saveCurrentState)})();
 </script>
