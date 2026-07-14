@@ -1968,6 +1968,7 @@ function applySidebarSectionsState() {
 }
 
 function replayTour() {
+  tourSavedState = JSON.stringify(S);
   closePanel();
   onboardStep = 0;
   renderOnboardStep();
@@ -2150,23 +2151,31 @@ function triggerPhotoInput(useCamera) {
   input.click();
 }
 
-function showOnboarding(){if(localStorage.getItem('sparkOnboardDone'))return;onboardStep=0;renderOnboardStep()}
+let tourSavedState = null;
+
+function showOnboarding(){if(localStorage.getItem('sparkOnboardDone'))return;tourSavedState=JSON.stringify(S);onboardStep=0;renderOnboardStep()}
 function endOnboarding(){
   localStorage.setItem('sparkOnboardDone','1');
   document.getElementById('onboard-overlay').innerHTML='';
   document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
   closePanel();
   closeDealAnalyzer();
-  S.showSummary=false;
-  S.currentCat=0;
-  const firstCat=CATEGORIES[0];
-  if(firstCat&&firstCat.items.length){
-    const firstId=firstCat.items[0].id;
-    if(S.items[firstId]&&S.items[firstId].qty==='100'&&!S.items[firstId].notes){
-      S.items[firstId].checked=false;
-      S.items[firstId].qty='';
+  
+  if (tourSavedState) {
+    try {
+      const saved = JSON.parse(tourSavedState);
+      S.items = saved.items;
+      S.property = saved.property;
+      S.dealAnalyzer = saved.dealAnalyzer;
+      S.rooms = saved.rooms;
+      S.currentCat = saved.currentCat;
+      S.showSummary = saved.showSummary;
+    } catch (e) {
+      console.error(e);
     }
+    tourSavedState = null;
   }
+  
   saveCurrentState();
   render();
 }
